@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Required by aws-actions/configure-aws-credentials
+      id-token: write
+      # Required by actions/checkout
+      contents: read
+      # Required by guardian/actions-riff-raff
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node is needed for CDK
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: cdk/.nvmrc
+          cache: yarn
+          cache-dependency-path: cdk/yarn.lock
+
+      # Java is needed for the Scala Play app
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 11
+          distribution: corretto
+          cache: sbt
+
+      # Build CDK and Play (in sequence)
+      - run: scripts/ci
+
+      # Fetch AWS credentials, allowing us to upload build artefacts to S3
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
+          aws-region: eu-west-1
+
+      # Upload our build artifacts to S3
+      - uses: guardian/actions-riff-raff@v3
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          projectName: identity:gatehouse
+          configPath: cdk/cdk.out/riff-raff.yaml
+          contentDirectories: |
+            cdk.out:
+              - cdk/cdk.out
+            gatehouse:
+              - target/gatehouse.deb

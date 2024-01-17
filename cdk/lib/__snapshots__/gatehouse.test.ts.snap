@@ -211,7 +211,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           },
         ],
         "Stage": "TEST",
-        "TTL": 7200,
+        "TTL": 3600,
       },
       "Type": "Guardian::DNS::RecordSet",
     },
