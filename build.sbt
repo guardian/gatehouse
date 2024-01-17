@@ -1,5 +1,5 @@
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala, JDebPackaging)
+  .enablePlugins(PlayScala, JDebPackaging, SystemdPlugin)
   .settings(
     name := "gatehouse",
     version := "0.1.0-SNAPSHOT",
