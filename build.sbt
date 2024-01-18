@@ -9,5 +9,11 @@ lazy val root = (project in file("."))
       "-feature",
       "-Werror",
     ),
-    libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test,
+    Universal / javaOptions ++= Seq(
+      s"-Dpidfile.path=/dev/null",
+      s"-J-Dlogs.home=/var/log/${packageName.value}",
+    ),
+    libraryDependencies ++= Seq(
+      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test,
+    )
   )
