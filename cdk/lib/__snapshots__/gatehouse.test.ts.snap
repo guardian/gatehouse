@@ -4,6 +4,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
 {
   "Metadata": {
     "gu:cdk:constructs": [
+      "GuPolicy",
       "GuVpcParameter",
       "GuSubnetListParameter",
       "GuSubnetListParameter",
@@ -616,6 +617,45 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
+    "ReadAppSsmParamsPolicy9DC17627": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/TEST/identity/gatehouse/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ReadAppSsmParamsPolicy9DC17627",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleGatehouse075DE24E",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
     "TargetGroupGatehouseEB93E2A5": {
       "Properties": {
         "HealthCheckIntervalSeconds": 10,
@@ -828,7 +868,8 @@ aws s3 cp 's3://",
                     "Ref": "DistributionBucketName",
                   },
                   "/identity/TEST/gatehouse/gatehouse.deb' '/gatehouse/gatehouse.deb'
-dpkg -i /gatehouse/gatehouse.deb",
+dpkg -i /gatehouse/gatehouse.deb
+echo "stage=TEST" | sudo tee "/etc/gatehouse/stage.conf" > /dev/null",
                 ],
               ],
             },

@@ -14,6 +14,7 @@ lazy val root = (project in file("."))
       s"-J-Dlogs.home=/var/log/${packageName.value}",
     ),
     libraryDependencies ++= Seq(
+      "software.amazon.awssdk" % "ssm" % "2.23.7",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test,
-    )
+    ),
   )
