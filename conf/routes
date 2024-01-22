@@ -3,4 +3,5 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
++anyhost
 GET /healthcheck controllers.HealthCheckController.healthCheck()
