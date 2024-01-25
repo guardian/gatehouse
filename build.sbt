@@ -9,6 +9,7 @@ lazy val root = (project in file("."))
       "-feature",
       "-Werror",
     ),
+    scalafmtOnCompile := true,
     Universal / javaOptions ++= Seq(
       s"-Dpidfile.path=/dev/null",
       s"-J-Dlogs.home=/var/log/${packageName.value}",

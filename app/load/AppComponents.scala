@@ -33,7 +33,6 @@ class AppComponents(context: Context)
       super.configuration
     else
       Configuration("play.http.secret.key" -> secretKey).withFallback(super.configuration)
-
   lazy val healthCheckController = new controllers.HealthCheckController(controllerComponents)
   lazy val router: Routes = new Routes(httpErrorHandler, healthCheckController)
 }
