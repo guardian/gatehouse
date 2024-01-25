@@ -1,5 +1,5 @@
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala)
+  .enablePlugins(PlayScala, JDebPackaging, SystemdPlugin)
   .settings(
     name := "gatehouse",
     version := "0.1.0-SNAPSHOT",
@@ -10,7 +10,12 @@ lazy val root = (project in file("."))
       "-Werror",
     ),
     scalafmtOnCompile := true,
+    Universal / javaOptions ++= Seq(
+      s"-Dpidfile.path=/dev/null",
+      s"-J-Dlogs.home=/var/log/${packageName.value}",
+    ),
     libraryDependencies ++= Seq(
-      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.0" % Test,
+      "software.amazon.awssdk" % "ssm" % "2.23.10",
+      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
   )

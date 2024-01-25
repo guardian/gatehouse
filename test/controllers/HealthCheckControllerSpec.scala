@@ -13,20 +13,18 @@ class HealthCheckControllerSpec extends PlaySpec with OneAppPerTestWithComponent
 
   "GET healthcheck" should {
 
+    val path = "/healthcheck"
+
     "run health check from a new instance of controller" in {
       val controller = new HealthCheckController(stubControllerComponents())
-      val healthCheck = controller.healthCheck().apply(FakeRequest(GET, "/management/healthcheck"))
-      status(healthCheck) mustBe NOT_IMPLEMENTED
-      contentType(healthCheck) mustBe Some("text/html")
-      contentAsString(healthCheck) must include("TODO")
+      val healthCheck = controller.healthCheck().apply(FakeRequest(GET, path))
+      status(healthCheck) mustBe OK
     }
 
     "run health check from the router" in {
-      val request = FakeRequest(GET, "/management/healthcheck")
+      val request = FakeRequest(GET, path)
       val healthCheck = route(app, request).get
-      status(healthCheck) mustBe NOT_IMPLEMENTED
-      contentType(healthCheck) mustBe Some("text/html")
-      contentAsString(healthCheck) must include("TODO")
+      status(healthCheck) mustBe OK
     }
   }
 }

@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Fail on any error
+set -e
+
+# Build Cloudformation template
+(
+  cd cdk
+  yarn install --frozen-lockfile
+  yarn lint
+  yarn test
+  yarn synth
+)
+
+# Build a Debian package of app
+sbt clean compile Test/compile test Debian/packageBin
+
+# Rename Debian package to something more meaningful
+mv target/gatehouse_0.1.0-SNAPSHOT_all.deb target/gatehouse.deb

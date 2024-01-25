@@ -1,0 +1,919 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`The Gatehouse stack matches the snapshot 1`] = `
+{
+  "Metadata": {
+    "gu:cdk:constructs": [
+      "GuPolicy",
+      "GuVpcParameter",
+      "GuSubnetListParameter",
+      "GuSubnetListParameter",
+      "GuPlayApp",
+      "GuCertificate",
+      "GuInstanceRole",
+      "GuDescribeEC2Policy",
+      "GuLoggingStreamNameParameter",
+      "GuLogShippingPolicy",
+      "GuDistributionBucketParameter",
+      "GuGetDistributablePolicy",
+      "GuParameterStoreReadPolicy",
+      "GuAmiParameter",
+      "GuHttpsEgressSecurityGroup",
+      "GuWazuhAccess",
+      "GuAutoScalingGroup",
+      "GuApplicationLoadBalancer",
+      "GuApplicationTargetGroup",
+      "GuHttpsApplicationListener",
+      "GuCname",
+    ],
+    "gu:cdk:version": "TEST",
+  },
+  "Outputs": {
+    "LoadBalancerGatehouseDnsName": {
+      "Description": "DNS entry for LoadBalancerGatehouse",
+      "Value": {
+        "Fn::GetAtt": [
+          "LoadBalancerGatehouse6031E987",
+          "DNSName",
+        ],
+      },
+    },
+  },
+  "Parameters": {
+    "AMIGatehouse": {
+      "Description": "Amazon Machine Image ID for the app gatehouse. Use this in conjunction with AMIgo to keep AMIs up to date.",
+      "Type": "AWS::EC2::Image::Id",
+    },
+    "DistributionBucketName": {
+      "Default": "/account/services/artifact.bucket",
+      "Description": "SSM parameter containing the S3 bucket name holding distribution artifacts",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "LoggingStreamName": {
+      "Default": "/account/services/logging.stream.name",
+      "Description": "SSM parameter containing the Name (not ARN) on the kinesis stream",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "VpcId": {
+      "Default": "/account/vpc/primary/id",
+      "Description": "Virtual Private Cloud to run EC2 instances within. Should NOT be the account default VPC.",
+      "Type": "AWS::SSM::Parameter::Value<AWS::EC2::VPC::Id>",
+    },
+    "gatehousePrivateSubnets": {
+      "Default": "/account/vpc/primary/subnets/private",
+      "Description": "A list of private subnets",
+      "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
+    },
+    "gatehousePublicSubnets": {
+      "Default": "/account/vpc/primary/subnets/public",
+      "Description": "A list of public subnets",
+      "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
+    },
+  },
+  "Resources": {
+    "AutoScalingGroupGatehouseASG9482EAEF": {
+      "Properties": {
+        "HealthCheckGracePeriod": 120,
+        "HealthCheckType": "ELB",
+        "LaunchTemplate": {
+          "LaunchTemplateId": {
+            "Ref": "identityTESTgatehouseBDA14DB7",
+          },
+          "Version": {
+            "Fn::GetAtt": [
+              "identityTESTgatehouseBDA14DB7",
+              "LatestVersionNumber",
+            ],
+          },
+        },
+        "MaxSize": "2",
+        "MinSize": "1",
+        "Tags": [
+          {
+            "Key": "App",
+            "PropagateAtLaunch": true,
+            "Value": "gatehouse",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "PropagateAtLaunch": true,
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "PropagateAtLaunch": true,
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "LogKinesisStreamName",
+            "PropagateAtLaunch": true,
+            "Value": {
+              "Ref": "LoggingStreamName",
+            },
+          },
+          {
+            "Key": "Stack",
+            "PropagateAtLaunch": true,
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "PropagateAtLaunch": true,
+            "Value": "TEST",
+          },
+          {
+            "Key": "SystemdUnit",
+            "PropagateAtLaunch": true,
+            "Value": "gatehouse.service",
+          },
+        ],
+        "TargetGroupARNs": [
+          {
+            "Ref": "TargetGroupGatehouseEB93E2A5",
+          },
+        ],
+        "VPCZoneIdentifier": {
+          "Ref": "gatehousePrivateSubnets",
+        },
+      },
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+    },
+    "CertificateGatehouse0CF1A666": {
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "DomainName": "id.test.dev-guardianapis.com",
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "gatehouse",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Name",
+            "Value": "gatehouse-TEST/CertificateGatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+        "ValidationMethod": "DNS",
+      },
+      "Type": "AWS::CertificateManager::Certificate",
+      "UpdateReplacePolicy": "Retain",
+    },
+    "DescribeEC2PolicyFF5F9295": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "autoscaling:DescribeAutoScalingInstances",
+                "autoscaling:DescribeAutoScalingGroups",
+                "ec2:DescribeTags",
+                "ec2:DescribeInstances",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "describe-ec2-policy",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleGatehouse075DE24E",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "EC2AppDNS": {
+      "Properties": {
+        "Name": "id.test.dev-guardianapis.com",
+        "RecordType": "CNAME",
+        "ResourceRecords": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerGatehouse6031E987",
+              "DNSName",
+            ],
+          },
+        ],
+        "Stage": "TEST",
+        "TTL": 3600,
+      },
+      "Type": "Guardian::DNS::RecordSet",
+    },
+    "GetDistributablePolicyGatehouse34FFC5AF": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:s3:::",
+                    {
+                      "Ref": "DistributionBucketName",
+                    },
+                    "/identity/TEST/gatehouse/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "GetDistributablePolicyGatehouse34FFC5AF",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleGatehouse075DE24E",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "GuHttpsEgressSecurityGroupGatehouseD78E25BB": {
+      "Properties": {
+        "GroupDescription": "Allow all outbound HTTPS traffic",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound HTTPS traffic",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "gatehouse",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "GuHttpsEgressSecurityGroupGatehousefromgatehouseTESTLoadBalancerGatehouseSecurityGroup226CEBB690008C0B659F": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "GuHttpsEgressSecurityGroupGatehouseD78E25BB",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerGatehouseSecurityGroupDD25BC00",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "GuLogShippingPolicy981BFE5A": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "kinesis:Describe*",
+                "kinesis:Put*",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:kinesis:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":stream/",
+                    {
+                      "Ref": "LoggingStreamName",
+                    },
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "GuLogShippingPolicy981BFE5A",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleGatehouse075DE24E",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "InstanceRoleGatehouse075DE24E": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "ec2.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/AmazonSSMManagedInstanceCore",
+              ],
+            ],
+          },
+        ],
+        "Path": "/",
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "gatehouse",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "ListenerGatehouseDDE3C56A": {
+      "Properties": {
+        "Certificates": [
+          {
+            "CertificateArn": {
+              "Ref": "CertificateGatehouse0CF1A666",
+            },
+          },
+        ],
+        "DefaultActions": [
+          {
+            "TargetGroupArn": {
+              "Ref": "TargetGroupGatehouseEB93E2A5",
+            },
+            "Type": "forward",
+          },
+        ],
+        "LoadBalancerArn": {
+          "Ref": "LoadBalancerGatehouse6031E987",
+        },
+        "Port": 443,
+        "Protocol": "HTTPS",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::Listener",
+    },
+    "LoadBalancerGatehouse6031E987": {
+      "Properties": {
+        "LoadBalancerAttributes": [
+          {
+            "Key": "deletion_protection.enabled",
+            "Value": "true",
+          },
+        ],
+        "Scheme": "internet-facing",
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "LoadBalancerGatehouseSecurityGroupDD25BC00",
+              "GroupId",
+            ],
+          },
+        ],
+        "Subnets": {
+          "Ref": "gatehousePublicSubnets",
+        },
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "gatehouse",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+        "Type": "application",
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::LoadBalancer",
+    },
+    "LoadBalancerGatehouseSecurityGroupDD25BC00": {
+      "Properties": {
+        "GroupDescription": "Automatically created Security Group for ELB gatehouseTESTLoadBalancerGatehouseC8325917",
+        "SecurityGroupIngress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow from anyone on port 443",
+            "FromPort": 443,
+            "IpProtocol": "tcp",
+            "ToPort": 443,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "gatehouse",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "LoadBalancerGatehouseSecurityGrouptogatehouseTESTGuHttpsEgressSecurityGroupGatehouse8627040E90000595EFE2": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "GuHttpsEgressSecurityGroupGatehouseD78E25BB",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerGatehouseSecurityGroupDD25BC00",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
+    "LoadBalancerGatehouseSecurityGrouptogatehouseTESTWazuhSecurityGroup77ADAF5C9000EAF2532A": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
+            "GroupId",
+          ],
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerGatehouseSecurityGroupDD25BC00",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
+    "ParameterStoreReadGatehouseF4274D8F": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ssm:GetParametersByPath",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/TEST/identity/gatehouse",
+                  ],
+                ],
+              },
+            },
+            {
+              "Action": [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/TEST/identity/gatehouse/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "parameter-store-read-policy",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleGatehouse075DE24E",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "ReadAppSsmParamsPolicy9DC17627": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "ssm:GetParameters",
+                "ssm:GetParameter",
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId",
+                    },
+                    ":parameter/TEST/identity/gatehouse/*",
+                  ],
+                ],
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "ReadAppSsmParamsPolicy9DC17627",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleGatehouse075DE24E",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
+    },
+    "TargetGroupGatehouseEB93E2A5": {
+      "Properties": {
+        "HealthCheckIntervalSeconds": 10,
+        "HealthCheckPath": "/healthcheck",
+        "HealthCheckProtocol": "HTTP",
+        "HealthCheckTimeoutSeconds": 5,
+        "HealthyThresholdCount": 5,
+        "Port": 9000,
+        "Protocol": "HTTP",
+        "Tags": [
+          {
+            "Key": "App",
+            "Value": "gatehouse",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+        "TargetGroupAttributes": [
+          {
+            "Key": "deregistration_delay.timeout_seconds",
+            "Value": "30",
+          },
+          {
+            "Key": "stickiness.enabled",
+            "Value": "false",
+          },
+        ],
+        "TargetType": "instance",
+        "UnhealthyThresholdCount": 2,
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::ElasticLoadBalancingV2::TargetGroup",
+    },
+    "WazuhSecurityGroup": {
+      "Properties": {
+        "GroupDescription": "Allow outbound traffic from wazuh agent to manager",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Wazuh event logging",
+            "FromPort": 1514,
+            "IpProtocol": "tcp",
+            "ToPort": 1514,
+          },
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Wazuh agent registration",
+            "FromPort": 1515,
+            "IpProtocol": "tcp",
+            "ToPort": 1515,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "WazuhSecurityGroupfromgatehouseTESTLoadBalancerGatehouseSecurityGroup226CEBB69000612267A4": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "WazuhSecurityGroup",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerGatehouseSecurityGroupDD25BC00",
+            "GroupId",
+          ],
+        },
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "identityTESTgatehouseBDA14DB7": {
+      "DependsOn": [
+        "InstanceRoleGatehouse075DE24E",
+      ],
+      "Properties": {
+        "LaunchTemplateData": {
+          "IamInstanceProfile": {
+            "Arn": {
+              "Fn::GetAtt": [
+                "identityTESTgatehouseProfileBF43149C",
+                "Arn",
+              ],
+            },
+          },
+          "ImageId": {
+            "Ref": "AMIGatehouse",
+          },
+          "InstanceType": "t4g.micro",
+          "MetadataOptions": {
+            "HttpTokens": "required",
+          },
+          "SecurityGroupIds": [
+            {
+              "Fn::GetAtt": [
+                "GuHttpsEgressSecurityGroupGatehouseD78E25BB",
+                "GroupId",
+              ],
+            },
+            {
+              "Fn::GetAtt": [
+                "WazuhSecurityGroup",
+                "GroupId",
+              ],
+            },
+          ],
+          "TagSpecifications": [
+            {
+              "ResourceType": "instance",
+              "Tags": [
+                {
+                  "Key": "gu:cdk:version",
+                  "Value": "TEST",
+                },
+                {
+                  "Key": "gu:repo",
+                  "Value": "guardian/gatehouse",
+                },
+                {
+                  "Key": "Name",
+                  "Value": "gatehouse-TEST/identity-TEST-gatehouse",
+                },
+                {
+                  "Key": "Stack",
+                  "Value": "identity",
+                },
+                {
+                  "Key": "Stage",
+                  "Value": "TEST",
+                },
+              ],
+            },
+            {
+              "ResourceType": "volume",
+              "Tags": [
+                {
+                  "Key": "gu:cdk:version",
+                  "Value": "TEST",
+                },
+                {
+                  "Key": "gu:repo",
+                  "Value": "guardian/gatehouse",
+                },
+                {
+                  "Key": "Name",
+                  "Value": "gatehouse-TEST/identity-TEST-gatehouse",
+                },
+                {
+                  "Key": "Stack",
+                  "Value": "identity",
+                },
+                {
+                  "Key": "Stage",
+                  "Value": "TEST",
+                },
+              ],
+            },
+          ],
+          "UserData": {
+            "Fn::Base64": {
+              "Fn::Join": [
+                "",
+                [
+                  "#!/bin/bash
+mkdir -p $(dirname '/gatehouse/gatehouse.deb')
+aws s3 cp 's3://",
+                  {
+                    "Ref": "DistributionBucketName",
+                  },
+                  "/identity/TEST/gatehouse/gatehouse.deb' '/gatehouse/gatehouse.deb'
+dpkg -i /gatehouse/gatehouse.deb && echo "stage=TEST" | sudo tee "/etc/gatehouse/stage.conf" > /dev/null",
+                ],
+              ],
+            },
+          },
+        },
+        "TagSpecifications": [
+          {
+            "ResourceType": "launch-template",
+            "Tags": [
+              {
+                "Key": "gu:cdk:version",
+                "Value": "TEST",
+              },
+              {
+                "Key": "gu:repo",
+                "Value": "guardian/gatehouse",
+              },
+              {
+                "Key": "Name",
+                "Value": "gatehouse-TEST/identity-TEST-gatehouse",
+              },
+              {
+                "Key": "Stack",
+                "Value": "identity",
+              },
+              {
+                "Key": "Stage",
+                "Value": "TEST",
+              },
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::EC2::LaunchTemplate",
+    },
+    "identityTESTgatehouseProfileBF43149C": {
+      "Properties": {
+        "Roles": [
+          {
+            "Ref": "InstanceRoleGatehouse075DE24E",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::InstanceProfile",
+    },
+  },
+}
+`;
