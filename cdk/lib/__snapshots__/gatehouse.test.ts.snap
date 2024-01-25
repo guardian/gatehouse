@@ -71,6 +71,25 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
     },
   },
   "Resources": {
+    "AlbSsmParam485C1D52": {
+      "Properties": {
+        "DataType": "text",
+        "Description": "The ARN of the ALB for identity-TEST-gatehouse. N.B. This parameter is created via CDK.",
+        "Name": "/infosec/waf/services/TEST/gatehouse-alb-arn",
+        "Tags": {
+          "Stack": "identity",
+          "Stage": "TEST",
+          "gu:cdk:version": "TEST",
+          "gu:repo": "guardian/gatehouse",
+        },
+        "Tier": "Standard",
+        "Type": "String",
+        "Value": {
+          "Ref": "LoadBalancerGatehouse6031E987",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
     "AutoScalingGroupGatehouseASG9482EAEF": {
       "Properties": {
         "HealthCheckGracePeriod": 120,
