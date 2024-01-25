@@ -7,6 +7,7 @@ import {GuPolicy, ReadParametersByName} from "@guardian/cdk/lib/constructs/iam";
 import type {App} from 'aws-cdk-lib';
 import {Duration} from 'aws-cdk-lib';
 import {InstanceClass, InstanceSize, InstanceType} from 'aws-cdk-lib/aws-ec2';
+import {ParameterDataType, ParameterTier, StringParameter} from "aws-cdk-lib/aws-ssm";
 
 export interface GatehouseStackProps extends GuStackProps {
     domainName: string;
@@ -52,6 +53,16 @@ export class Gatehouse extends GuStack {
             roleConfiguration: {
                 additionalPolicies: [readAppSsmParamsPolicy],
             },
+        });
+
+        // This parameter is used by https://github.com/guardian/waf
+        new StringParameter(this, "AlbSsmParam", {
+            parameterName: `/infosec/waf/services/${this.stage}/gatehouse-alb-arn`,
+            description: `The ARN of the ALB for identity-${this.stage}-gatehouse. N.B. This parameter is created via CDK.`,
+            simpleName: false,
+            stringValue: loadBalancer.loadBalancerArn,
+            tier: ParameterTier.STANDARD,
+            dataType: ParameterDataType.TEXT,
         });
 
         new GuCname(this, 'EC2AppDNS', {
