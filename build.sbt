@@ -16,6 +16,7 @@ lazy val root = (project in file("."))
     ),
     libraryDependencies ++= Seq(
       "software.amazon.awssdk" % "ssm" % "2.23.10",
+      "net.logstash.logback" % "logstash-logback-encoder" % "7.3",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
   )
