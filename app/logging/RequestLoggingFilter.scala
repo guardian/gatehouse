@@ -61,11 +61,11 @@ class RequestLoggingFilter(override val mat: Materializer)(implicit ec: Executio
     )
     val markerContext = MarkerContext(appendEntries(fields.asJava))
     val message = s"""${fields("origin")} -
-                    | "${request.method} ${request.uri} ${request.version}"
-                    | ${response.header.status}
-                    | ${fields("content_length")}
-                    | "${fields("referrer")}"
-                    | ${duration}ms""".stripMargin.replaceAll("\n", " ")
+                    |"${request.method} ${request.uri} ${request.version}"
+                    |${response.header.status}
+                    |${fields("content_length")}
+                    |"${fields("referrer")}"
+                    |${duration}ms""".stripMargin.replaceAll("\n", " ")
     logger.info(message)(markerContext)
   }
 
@@ -73,10 +73,10 @@ class RequestLoggingFilter(override val mat: Materializer)(implicit ec: Executio
     val fields = commonFields(request, duration)
     val markerContext = MarkerContext(appendEntries(fields.asJava))
     val message = s"""${fields("origin")} -
-                    | "${request.method} ${request.uri} ${request.version}"
-                    | ERROR
-                    | "${fields("referrer")}"
-                    | ${duration}ms""".stripMargin.replaceAll("\n", " ")
+                    |"${request.method} ${request.uri} ${request.version}"
+                    |ERROR
+                    |"${fields("referrer")}"
+                    |${duration}ms""".stripMargin.replaceAll("\n", " ")
     logger.info(message)(markerContext)
     logger.error(s"Error for ${request.method} ${request.uri}", throwable)
   }
