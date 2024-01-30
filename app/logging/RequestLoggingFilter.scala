@@ -4,7 +4,7 @@ import net.logstash.logback.marker.Markers.appendEntries
 import org.apache.pekko.stream.Materializer
 import play.api.mvc.{Filter, RequestHeader, Result}
 import play.api.{Logging, MarkerContext}
-
+import logging.LogEntry
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success}
@@ -33,51 +33,21 @@ class RequestLoggingFilter(override val mat: Materializer)(implicit ec: Executio
     result onComplete {
       case Success(response) =>
         val duration = System.currentTimeMillis() - start
-        logSuccess(request, response, duration)
+        logSuccess(LogEntry.requestAndResponse(request, response, duration))
 
       case Failure(err) =>
         val duration = System.currentTimeMillis() - start
-        logFailure(request, err, duration)
+        logFailure(request, err, LogEntry.error(request, duration))
     }
 
     result
   }
 
-  private def commonFields(request: RequestHeader, duration: Long) =
-    Map(
-      "type" -> "access",
-      "origin" -> request.headers.get("X-Forwarded-For").getOrElse(request.remoteAddress),
-      "referrer" -> request.headers.get("Referer").getOrElse(""),
-      "method" -> request.method,
-      "duration" -> duration,
-      "protocol" -> request.version,
-      "requested_uri" -> request.uri,
-    )
+  private def logSuccess(logEntry: LogEntry): Unit =
+    logger.info(logEntry.message)(MarkerContext(appendEntries(logEntry.otherFields.asJava)))
 
-  private def logSuccess(request: RequestHeader, response: Result, duration: Long): Unit = {
-    val fields = commonFields(request, duration) ++ Map(
-      "status" -> response.header.status,
-      "content_length" -> response.header.headers.getOrElse("Content-Length", 0),
-    )
-    val markerContext = MarkerContext(appendEntries(fields.asJava))
-    val message = s"""${fields("origin")} -
-                    |"${request.method} ${request.uri} ${request.version}"
-                    |${response.header.status}
-                    |${fields("content_length")}
-                    |"${fields("referrer")}"
-                    |${duration}ms""".stripMargin.replaceAll("\n", " ")
-    logger.info(message)(markerContext)
-  }
-
-  private def logFailure(request: RequestHeader, throwable: Throwable, duration: Long): Unit = {
-    val fields = commonFields(request, duration)
-    val markerContext = MarkerContext(appendEntries(fields.asJava))
-    val message = s"""${fields("origin")} -
-                    |"${request.method} ${request.uri} ${request.version}"
-                    |ERROR
-                    |"${fields("referrer")}"
-                    |${duration}ms""".stripMargin.replaceAll("\n", " ")
-    logger.info(message)(markerContext)
+  private def logFailure(request: RequestHeader, throwable: Throwable, logEntry: LogEntry): Unit = {
+    logger.info(logEntry.message)(MarkerContext(appendEntries(logEntry.otherFields.asJava)))
     logger.error(s"Error for ${request.method} ${request.uri}", throwable)
   }
 }
