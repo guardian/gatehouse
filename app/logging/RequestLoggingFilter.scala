@@ -4,7 +4,7 @@ import net.logstash.logback.marker.Markers.appendEntries
 import org.apache.pekko.stream.Materializer
 import play.api.mvc.{Filter, RequestHeader, Result}
 import play.api.{Logging, MarkerContext}
-import logging.LogEntry
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.jdk.CollectionConverters.*
 import scala.util.{Failure, Success}
@@ -30,24 +30,21 @@ class RequestLoggingFilter(override val mat: Materializer)(implicit ec: Executio
     val start = System.currentTimeMillis()
     val result = next(request)
 
+    def markerContext(logEntry: LogEntry) = MarkerContext(appendEntries(logEntry.otherFields.asJava))
+
     result onComplete {
       case Success(response) =>
         val duration = System.currentTimeMillis() - start
-        logSuccess(LogEntry.requestAndResponse(request, response, duration))
+        val logEntry = LogEntry.requestAndResponse(request, response, duration)
+        logger.info(logEntry.message)(markerContext(logEntry))
 
       case Failure(err) =>
         val duration = System.currentTimeMillis() - start
-        logFailure(request, err, LogEntry.error(request, duration))
+        val logEntry = LogEntry.error(request, duration)
+        logger.info(logEntry.message)(markerContext(logEntry))
+        logger.error(s"Error for ${request.method} ${request.uri}", err)
     }
 
     result
-  }
-
-  private def logSuccess(logEntry: LogEntry): Unit =
-    logger.info(logEntry.message)(MarkerContext(appendEntries(logEntry.otherFields.asJava)))
-
-  private def logFailure(request: RequestHeader, throwable: Throwable, logEntry: LogEntry): Unit = {
-    logger.info(logEntry.message)(MarkerContext(appendEntries(logEntry.otherFields.asJava)))
-    logger.error(s"Error for ${request.method} ${request.uri}", throwable)
   }
 }
