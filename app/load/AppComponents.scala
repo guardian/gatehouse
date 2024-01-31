@@ -1,6 +1,8 @@
 package load
 
+import logging.RequestLoggingFilter
 import play.api.ApplicationLoader.Context
+import play.api.mvc.EssentialFilter
 import play.api.{BuiltInComponentsFromContext, Configuration}
 import play.filters.HttpFiltersComponents
 import router.Routes
@@ -10,9 +12,7 @@ import software.amazon.awssdk.services.ssm.model.GetParameterRequest
 
 import scala.util.Using
 
-class AppComponents(context: Context)
-    extends BuiltInComponentsFromContext(context)
-    with HttpFiltersComponents {
+class AppComponents(context: Context) extends BuiltInComponentsFromContext(context) with HttpFiltersComponents {
 
   private val region = Region.EU_WEST_1
 
@@ -33,6 +33,9 @@ class AppComponents(context: Context)
       super.configuration
     else
       Configuration("play.http.secret.key" -> secretKey).withFallback(super.configuration)
+
+  override def httpFilters: Seq[EssentialFilter] = super.httpFilters :+ new RequestLoggingFilter(materializer)
+
   lazy val healthCheckController = new controllers.HealthCheckController(controllerComponents)
   lazy val router: Routes = new Routes(httpErrorHandler, healthCheckController)
 }
