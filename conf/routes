@@ -5,3 +5,5 @@
 
 +anyhost
 GET /healthcheck controllers.HealthCheckController.healthCheck()
+
+GET /user/me controllers.UserController.me()
