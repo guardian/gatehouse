@@ -34,7 +34,7 @@ export class Gatehouse extends GuStack {
             userData: {
                 distributable: {
                     fileName: `${ec2App}.deb`,
-                    executionStatement: `dpkg -i /${ec2App}/${ec2App}.deb && echo "stage=${this.stage}" | sudo tee "/etc/gatehouse/stage.conf" > /dev/null`,
+                    executionStatement: `dpkg -i /${ec2App}/${ec2App}.deb`,
                 },
             },
             certificateProps: {

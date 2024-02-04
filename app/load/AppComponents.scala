@@ -14,26 +14,6 @@ import scala.util.Using
 
 class AppComponents(context: Context) extends BuiltInComponentsFromContext(context) with HttpFiltersComponents {
 
-  private val region = Region.EU_WEST_1
-
-  private val stage = context.initialConfiguration.getOptional[String]("stage").getOrElse("DEV")
-
-  private lazy val secretKey: String = {
-    val request = GetParameterRequest.builder
-      .name(s"/$stage/identity/gatehouse/playSecret")
-      .withDecryption(true)
-      .build()
-    Using.resource(SsmClient.builder.region(region).build()) {
-      _.getParameter(request).parameter.value
-    }
-  }
-
-  override def configuration: Configuration =
-    if (stage == "DEV")
-      super.configuration
-    else
-      Configuration("play.http.secret.key" -> secretKey).withFallback(super.configuration)
-
   override def httpFilters: Seq[EssentialFilter] = super.httpFilters :+ new RequestLoggingFilter(materializer)
 
   lazy val healthCheckController = new controllers.HealthCheckController(controllerComponents)
