@@ -15,7 +15,7 @@ lazy val root = (project in file("."))
       s"-J-Dlogs.home=/var/log/${packageName.value}",
     ),
     libraryDependencies ++= Seq(
-      "net.logstash.logback" % "logstash-logback-encoder" % "7.3",
+      "net.logstash.logback" % "logstash-logback-encoder" % "7.4",
       ("com.gu" %% "simple-configuration-ssm" % "1.6.4").cross(CrossVersion.for3Use2_13),
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
