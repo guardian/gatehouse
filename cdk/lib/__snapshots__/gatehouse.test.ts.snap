@@ -887,7 +887,7 @@ aws s3 cp 's3://",
                     "Ref": "DistributionBucketName",
                   },
                   "/identity/TEST/gatehouse/gatehouse.deb' '/gatehouse/gatehouse.deb'
-dpkg -i /gatehouse/gatehouse.deb && echo "stage=TEST" | sudo tee "/etc/gatehouse/stage.conf" > /dev/null",
+dpkg -i /gatehouse/gatehouse.deb",
                 ],
               ],
             },

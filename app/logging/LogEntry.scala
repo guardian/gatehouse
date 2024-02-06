@@ -21,7 +21,6 @@ private[logging] object LogEntry {
   def requestAndResponse(request: RequestHeader, response: Result, duration: Long): LogEntry = {
     val fields = commonFields(request, duration) ++ Map(
       "status" -> response.header.status,
-      "content_length" -> response.header.headers.getOrElse(CONTENT_LENGTH, 0),
       "content_length" -> response.header.headers.get(CONTENT_LENGTH).map(_.toInt).getOrElse(0),
     )
     val message =
