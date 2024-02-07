@@ -15,7 +15,7 @@ lazy val root = (project in file("."))
       s"-J-Dlogs.home=/var/log/${packageName.value}",
     ),
     libraryDependencies ++= Seq(
-      "net.logstash.logback" % "logstash-logback-encoder" % "7.3",
+      "net.logstash.logback" % "logstash-logback-encoder" % "7.4",
       ("com.gu" %% "simple-configuration-ssm" % "1.6.4").cross(CrossVersion.for3Use2_13),
       /* Using Scala 2.13 version of identity-auth-play until a Scala 3 version has been released:
        * https://trello.com/c/5kOc41kD/4669-release-scala-3-version-of-identity-libraries */
@@ -27,4 +27,8 @@ lazy val root = (project in file("."))
         exclude ("com.typesafe", "ssl-config-core_2.13"),
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
+    dependencyOverrides ++= Seq(
+      // To keep all Jackson dependencies on the same version
+      "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.15.2" % Runtime,
+    )
   )
