@@ -14,6 +14,7 @@ lazy val root = (project in file("."))
       s"-Dpidfile.path=/dev/null",
       s"-J-Dlogs.home=/var/log/${packageName.value}",
     ),
+    Test / javaOptions += "-Dlogback.configurationFile=logback-test.xml",
     libraryDependencies ++= Seq(
       "net.logstash.logback" % "logstash-logback-encoder" % "7.4",
       ("com.gu" %% "simple-configuration-ssm" % "1.6.4").cross(CrossVersion.for3Use2_13),
