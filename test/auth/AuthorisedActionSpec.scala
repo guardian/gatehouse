@@ -17,9 +17,13 @@ class AuthorisedActionSpec extends PlaySpec {
 
   "refine" should {
 
+    val requiredScopes = List(new AccessScope {
+      override def name: String = "requiredScope"
+    })
+
     "return 401 when there is no Authorization header" in {
       val authService = mock[OktaAuthService]
-      val action = new AuthorisedAction(authService, Nil)
+      val action = new AuthorisedAction(authService, requiredScopes)
       val request = FakeRequest(GET, "/")
       val result = action(Ok)(request)
       status(result) shouldBe UNAUTHORIZED
@@ -27,10 +31,19 @@ class AuthorisedActionSpec extends PlaySpec {
       contentAsString(result) shouldBe "Request has no Authorization header"
     }
 
+    "return 401 when the token is invalid" in {
+      val authService = mock[OktaAuthService]
+      when(authService.validateAccessToken(AccessToken("invalidToken"), requiredScopes))
+        .thenReturn(IO.raiseError(OktaValidationException(InvalidOrExpiredToken)))
+      val action = new AuthorisedAction(authService, requiredScopes)
+      val request = FakeRequest(GET, "/").withHeaders("Authorization" -> "Bearer invalidToken")
+      val result = action(Ok)(request)
+      status(result) shouldBe UNAUTHORIZED
+      contentType(result) shouldBe Some("text/plain")
+      contentAsString(result) shouldBe "Token is invalid or expired"
+    }
+
     "return 403 when the token is valid but doesn't have the required scopes" in {
-      val requiredScopes = List(new AccessScope {
-        override def name: String = "requiredScope"
-      })
       val authService = mock[OktaAuthService]
       when(authService.validateAccessToken(AccessToken("validToken"), requiredScopes))
         .thenReturn(IO.raiseError(OktaValidationException(MissingRequiredScope(requiredScopes))))
