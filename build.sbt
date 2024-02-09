@@ -31,5 +31,9 @@ lazy val root = (project in file("."))
     dependencyOverrides ++= Seq(
       // To keep all Jackson dependencies on the same version
       "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.15.2" % Runtime,
-    )
+    ),
+    excludeDependencies ++= Seq(
+      // As of Play 3.0, groupId has changed to org.playframework; exclude transitive dependencies to the old artifacts
+      ExclusionRule(organization = "com.typesafe.play")
+    ),
   )

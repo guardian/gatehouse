@@ -13,7 +13,7 @@ set -e
 )
 
 # Build a Debian package of app
-sbt clean compile Test/compile test Debian/packageBin
+sbt clean scalafmtCheckAll scalafmtSbtCheck compile Test/compile test Debian/packageBin
 
 # Rename Debian package to something more meaningful
 mv target/gatehouse_0.1.0-SNAPSHOT_all.deb target/gatehouse.deb
