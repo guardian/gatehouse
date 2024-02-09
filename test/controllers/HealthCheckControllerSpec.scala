@@ -1,6 +1,7 @@
 package controllers
 
 import load.AppComponents
+import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatestplus.play.*
 import org.scalatestplus.play.components.OneAppPerTestWithComponents
 import play.api.BuiltInComponents
@@ -18,17 +19,17 @@ class HealthCheckControllerSpec extends PlaySpec with OneAppPerTestWithComponent
     "run health check from a new instance of controller" in {
       val controller = new HealthCheckController(stubControllerComponents())
       val healthCheck = controller.healthCheck().apply(FakeRequest(GET, path))
-      status(healthCheck) mustBe OK
-      contentType(healthCheck) mustBe Some("text/plain")
-      contentAsString(healthCheck) must be("OK")
+      status(healthCheck) shouldBe OK
+      contentType(healthCheck) shouldBe Some("text/plain")
+      contentAsString(healthCheck) shouldBe "OK"
     }
 
     "run health check from the router" in {
       val request = FakeRequest(GET, path)
       val healthCheck = route(app, request).get
-      status(healthCheck) mustBe OK
-      contentType(healthCheck) mustBe Some("text/plain")
-      contentAsString(healthCheck) must be("OK")
+      status(healthCheck) shouldBe OK
+      contentType(healthCheck) shouldBe Some("text/plain")
+      contentAsString(healthCheck) shouldBe "OK"
     }
   }
 }
