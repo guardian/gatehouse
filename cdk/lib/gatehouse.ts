@@ -1,16 +1,17 @@
 import {GuPlayApp} from '@guardian/cdk';
 import {AccessScope} from '@guardian/cdk/lib/constants/access';
-import {GuStack} from '@guardian/cdk/lib/constructs/core';
 import type {GuStackProps} from '@guardian/cdk/lib/constructs/core';
+import {GuStack} from '@guardian/cdk/lib/constructs/core';
 import {GuCname} from '@guardian/cdk/lib/constructs/dns';
 import {GuPolicy, ReadParametersByName} from "@guardian/cdk/lib/constructs/iam";
 import type {App} from 'aws-cdk-lib';
 import {Duration} from 'aws-cdk-lib';
-import {InstanceClass, InstanceSize, InstanceType} from 'aws-cdk-lib/aws-ec2';
+import {InstanceClass, InstanceSize, InstanceType, SecurityGroup} from 'aws-cdk-lib/aws-ec2';
 import {ParameterDataType, ParameterTier, StringParameter} from "aws-cdk-lib/aws-ssm";
 
 export interface GatehouseStackProps extends GuStackProps {
     domainName: string;
+    rdsSecurityGroupId: string;
 }
 
 export class Gatehouse extends GuStack {
@@ -27,7 +28,7 @@ export class Gatehouse extends GuStack {
             statements: [new ReadParametersByName(this, {app: ec2App})]
         })
 
-        const {loadBalancer} = new GuPlayApp(this, {
+        const app = new GuPlayApp(this, {
             app: ec2App,
             instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
             access: {scope: AccessScope.PUBLIC},
@@ -55,12 +56,16 @@ export class Gatehouse extends GuStack {
             },
         });
 
+        app.autoScalingGroup.connections.addSecurityGroup(SecurityGroup.fromSecurityGroupId(this, 'rdsSecurityGroup', props.rdsSecurityGroupId, {
+            mutable: false
+        }));
+
         // This parameter is used by https://github.com/guardian/waf
         new StringParameter(this, "AlbSsmParam", {
             parameterName: `/infosec/waf/services/${this.stage}/gatehouse-alb-arn`,
             description: `The ARN of the ALB for identity-${this.stage}-gatehouse. N.B. This parameter is created via CDK.`,
             simpleName: false,
-            stringValue: loadBalancer.loadBalancerArn,
+            stringValue: app.loadBalancer.loadBalancerArn,
             tier: ParameterTier.STANDARD,
             dataType: ParameterDataType.TEXT,
         });
@@ -69,7 +74,7 @@ export class Gatehouse extends GuStack {
             app: ec2App,
             ttl: Duration.hours(1),
             domainName: props.domainName,
-            resourceRecord: loadBalancer.loadBalancerDnsName,
+            resourceRecord: app.loadBalancer.loadBalancerDnsName,
         });
     }
 }

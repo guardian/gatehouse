@@ -577,6 +577,22 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
+    "LoadBalancerGatehouseSecurityGrouptogatehouseTESTrdsSecurityGroup6652430490005CC1E089": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": "sg-12345678",
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerGatehouseSecurityGroupDD25BC00",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
     "ParameterStoreReadGatehouseF4274D8F": {
       "Properties": {
         "PolicyDocument": {
@@ -822,6 +838,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
                 "GroupId",
               ],
             },
+            "sg-12345678",
           ],
           "TagSpecifications": [
             {

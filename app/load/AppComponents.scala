@@ -6,11 +6,17 @@ import controllers.{HealthCheckController, UserController}
 import logging.RequestLoggingFilter
 import play.api.ApplicationLoader.Context
 import play.api.BuiltInComponentsFromContext
+import play.api.db.slick.{DbName, SlickComponents}
 import play.api.mvc.EssentialFilter
 import play.filters.HttpFiltersComponents
 import router.Routes
+import services.LegacyIdentityDbUserService
+import slick.jdbc.JdbcProfile
 
-class AppComponents(context: Context) extends BuiltInComponentsFromContext(context) with HttpFiltersComponents {
+class AppComponents(context: Context)
+    extends BuiltInComponentsFromContext(context)
+    with HttpFiltersComponents
+    with SlickComponents {
 
   override def httpFilters: Seq[EssentialFilter] = super.httpFilters :+ new RequestLoggingFilter(materializer)
 
@@ -24,8 +30,15 @@ class AppComponents(context: Context) extends BuiltInComponentsFromContext(conte
 
   private lazy val authorisedAction = new AuthorisedAction(authService, _)
 
-  private lazy val healthCheckController = new HealthCheckController(controllerComponents)
-  private lazy val userController = new UserController(controllerComponents, authorisedAction)
+  private lazy val legacyIdentityDbUserService = new LegacyIdentityDbUserService(
+    slickApi.dbConfig[JdbcProfile](DbName("legacyIdentityDb"))
+  )
+
+  private lazy val healthCheckController =
+    new HealthCheckController(controllerComponents, Seq(legacyIdentityDbUserService))
+
+  private lazy val userController =
+    new UserController(controllerComponents, authorisedAction, legacyIdentityDbUserService)
 
   lazy val router: Routes = new Routes(httpErrorHandler, healthCheckController, userController)
 }
