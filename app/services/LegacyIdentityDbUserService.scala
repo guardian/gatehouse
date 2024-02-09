@@ -1,20 +1,21 @@
 package services
 
 import model.{TransientUser, User}
+import play.api.libs.json.Json
 import slick.basic.DatabaseConfig
-import slick.jdbc.PostgresProfile
+import slick.jdbc.JdbcProfile
 import slick.lifted.TableQuery
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class LegacyIdentityDbUserService(val dbConfig: DatabaseConfig[PostgresProfile])(implicit ec: ExecutionContext)
+class LegacyIdentityDbUserService(val dbConfig: DatabaseConfig[JdbcProfile])(implicit ec: ExecutionContext)
     extends UserService {
 
   import dbConfig.profile.api.*
 
   private val db = dbConfig.db
 
-  class UserTable(tag: Tag) extends Table[User](tag, "users") {
+  private class UserTable(tag: Tag) extends Table[User](tag, "users") {
     def identityId = column[String]("id")
     def brazeId = column[String]("braze_uuid")
     def * = (identityId, brazeId).mapTo[User]
@@ -22,13 +23,14 @@ class LegacyIdentityDbUserService(val dbConfig: DatabaseConfig[PostgresProfile])
 
   private val users = TableQuery[UserTable]
 
+  override def healthCheck(): Future[Unit] =
+    db.run(sql"SELECT 1".as[Int]).map(_ => ())
+
   def fetchUserByIdentityId(id: String): Future[Option[User]] = {
     val action = users.filter(_.identityId === id).take(1).result
     val result = db.run(action)
     result.map(_.headOption)
   }
-
-  override def healthCheck(): Future[Unit] = ???
 
   override def createUser(fields: TransientUser): Future[User] = ???
 

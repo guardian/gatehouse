@@ -8,6 +8,8 @@ import play.api.BuiltInComponents
 import play.api.test.*
 import play.api.test.Helpers.*
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class HealthCheckControllerSpec extends PlaySpec with OneAppPerTestWithComponents {
 
   override def components: BuiltInComponents = new AppComponents(context)
@@ -17,7 +19,7 @@ class HealthCheckControllerSpec extends PlaySpec with OneAppPerTestWithComponent
     val path = "/healthcheck"
 
     "run health check from a new instance of controller" in {
-      val controller = new HealthCheckController(stubControllerComponents())
+      val controller = new HealthCheckController(stubControllerComponents(), Nil)
       val healthCheck = controller.healthCheck().apply(FakeRequest(GET, path))
       status(healthCheck) shouldBe OK
       contentType(healthCheck) shouldBe Some("text/plain")

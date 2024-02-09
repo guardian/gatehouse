@@ -11,7 +11,7 @@ import play.api.mvc.EssentialFilter
 import play.filters.HttpFiltersComponents
 import router.Routes
 import services.LegacyIdentityDbUserService
-import slick.jdbc.PostgresProfile
+import slick.jdbc.JdbcProfile
 
 class AppComponents(context: Context)
     extends BuiltInComponentsFromContext(context)
@@ -31,7 +31,7 @@ class AppComponents(context: Context)
   private lazy val authorisedAction = new AuthorisedAction(authService, _)
 
   private lazy val legacyIdentityDbUserService = new LegacyIdentityDbUserService(
-    slickApi.dbConfig[PostgresProfile](DbName("legacyIdentityDb"))
+    slickApi.dbConfig[JdbcProfile](DbName("legacyIdentityDb"))
   )
 
   private lazy val healthCheckController =
