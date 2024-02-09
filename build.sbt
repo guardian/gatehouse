@@ -26,6 +26,8 @@ lazy val root = (project in file("."))
         exclude ("org.scala-lang.modules", "scala-parser-combinators_2.13")
         exclude ("com.fasterxml.jackson.module", "jackson-module-scala_2.13")
         exclude ("com.typesafe", "ssl-config-core_2.13"),
+      "com.typesafe.play" %% "play-slick" % "5.2.0-RC2",
+      "org.postgresql" % "postgresql" % "42.5.4",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
     dependencyOverrides ++= Seq(
