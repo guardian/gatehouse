@@ -3,6 +3,8 @@ package controllers
 import auth.AccessScopes.UserReadSelfSecure
 import auth.AuthorisedAction
 import com.gu.identity.auth.AccessScope
+import model.User
+import model.User.writes
 import play.api.*
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJson
@@ -21,6 +23,6 @@ class UserController(
   def me(): Action[AnyContent] = authorisedAction(List(UserReadSelfSecure)).async(request =>
     userService
       .fetchUserByIdentityId(request.claims.identityId)
-      .map(_.map(user => Ok(toJson(user))).getOrElse(NotFound))
+      .map(_.map(user => Ok(toJson(user)(writes.me))).getOrElse(NotFound))
   )
 }
