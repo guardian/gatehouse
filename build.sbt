@@ -3,7 +3,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "gatehouse",
     version := "0.1.0-SNAPSHOT",
-    scalaVersion := "3.3.1",
+    scalaVersion := "3.4.0",
     scalacOptions ++= Seq(
       "-explain",
       "-feature",
