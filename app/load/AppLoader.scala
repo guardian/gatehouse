@@ -21,12 +21,10 @@ class AppLoader extends ApplicationLoader {
   private def buildConfig(context: Context): Try[Config] = {
     val credentialsProvider = DefaultCredentialsProvider.create()
     val isDev = context.environment.mode == Mode.Dev
-    for {
+    for
       identity <-
-        if (isDev)
-          Success(AwsIdentity(app = appName, stack = "identity", stage = "DEV", region = "eu-west-1"))
-        else
-          AppIdentity.whoAmI(defaultAppName = appName, credentialsProvider)
+        if isDev then Success(AwsIdentity(app = appName, stack = "identity", stage = "DEV", region = "eu-west-1"))
+        else AppIdentity.whoAmI(defaultAppName = appName, credentialsProvider)
       config <- Try(ConfigurationLoader.load(identity, credentialsProvider) { case identity: AwsIdentity =>
         ComposedConfigurationLocation(
           List(
@@ -35,7 +33,7 @@ class AppLoader extends ApplicationLoader {
           )
         )
       })
-    } yield config
+    yield config
   }
 
   override def load(context: Context): Application = {

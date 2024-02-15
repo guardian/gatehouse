@@ -6,7 +6,10 @@ lazy val root = (project in file("."))
     scalaVersion := "3.4.0",
     scalacOptions ++= Seq(
       "-explain",
+      "-explain-types",
       "-feature",
+      "-new-syntax",
+      "-rewrite",
       "-Werror",
     ),
     scalafmtOnCompile := true,
