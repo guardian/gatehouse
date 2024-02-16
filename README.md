@@ -1,8 +1,9 @@
 # Gatehouse
 
-This [Play Framework](https://www.playframework.com/) app provides an API for managing the identity and access control
-of Guardian readers.
+This [Play Framework](https://www.playframework.com/) app provides an API for managing Identity accounts.
 The API forms a thin wrapper around our Identity Provider.
+
+While it's in a state of transition, it's also used to manage user service and marketing permissions.
 
 ## Structure
 
@@ -27,6 +28,12 @@ classDiagram
     CompositeUserService --* legacyIdentityDbUserService
     CompositeUserService --* OktaUserService
 ```
+
+## Running the app locally
+
+1. Set up a [local PostgreSQL service](https://github.com/guardian/identity-platform/tree/main/postgres) listening on port 5555.
+2. Install local AWS credentials for the Identity account.
+3. Run the app with `sbt run`.
 
 ## Configuration
 
