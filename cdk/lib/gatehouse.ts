@@ -1,17 +1,16 @@
 import {GuPlayApp} from '@guardian/cdk';
 import {AccessScope} from '@guardian/cdk/lib/constants/access';
 import type {GuStackProps} from '@guardian/cdk/lib/constructs/core';
-import {GuStack} from '@guardian/cdk/lib/constructs/core';
+import {GuStack, GuStringParameter} from '@guardian/cdk/lib/constructs/core';
 import {GuCname} from '@guardian/cdk/lib/constructs/dns';
-import {GuPolicy, ReadParametersByName} from "@guardian/cdk/lib/constructs/iam";
+import {GuPolicy, ReadParametersByName} from '@guardian/cdk/lib/constructs/iam';
 import type {App} from 'aws-cdk-lib';
 import {Duration} from 'aws-cdk-lib';
 import {InstanceClass, InstanceSize, InstanceType, SecurityGroup} from 'aws-cdk-lib/aws-ec2';
-import {ParameterDataType, ParameterTier, StringParameter} from "aws-cdk-lib/aws-ssm";
+import {ParameterDataType, ParameterTier, StringParameter} from 'aws-cdk-lib/aws-ssm';
 
 export interface GatehouseStackProps extends GuStackProps {
     domainName: string;
-    rdsSecurityGroupId: string;
 }
 
 export class Gatehouse extends GuStack {
@@ -27,6 +26,12 @@ export class Gatehouse extends GuStack {
         const readAppSsmParamsPolicy = new GuPolicy(this, 'ReadAppSsmParamsPolicy', {
             statements: [new ReadParametersByName(this, {app: ec2App})]
         })
+
+        const rdsSecurityGroupId = new GuStringParameter(this, 'rdsSecurityGroupId', {
+            fromSSM: true,
+            default: `/${this.stage}/${this.stack}/${ec2App}/rdsSecurityGroup/id`,
+            description: 'ID of database security group.',
+        });
 
         const app = new GuPlayApp(this, {
             app: ec2App,
@@ -56,12 +61,13 @@ export class Gatehouse extends GuStack {
             },
         });
 
-        app.autoScalingGroup.connections.addSecurityGroup(SecurityGroup.fromSecurityGroupId(this, 'rdsSecurityGroup', props.rdsSecurityGroupId, {
-            mutable: false
-        }));
+        app.autoScalingGroup.connections.addSecurityGroup(
+            SecurityGroup.fromSecurityGroupId(this, 'rdsSecurityGroup', rdsSecurityGroupId.valueAsString, {
+                mutable: false
+            }));
 
         // This parameter is used by https://github.com/guardian/waf
-        new StringParameter(this, "AlbSsmParam", {
+        new StringParameter(this, 'AlbSsmParam', {
             parameterName: `/infosec/waf/services/${this.stage}/gatehouse-alb-arn`,
             description: `The ARN of the ALB for identity-${this.stage}-gatehouse. N.B. This parameter is created via CDK.`,
             simpleName: false,

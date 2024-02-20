@@ -5,6 +5,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
   "Metadata": {
     "gu:cdk:constructs": [
       "GuPolicy",
+      "GuStringParameter",
       "GuVpcParameter",
       "GuSubnetListParameter",
       "GuSubnetListParameter",
@@ -68,6 +69,11 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "Default": "/account/vpc/primary/subnets/public",
       "Description": "A list of public subnets",
       "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
+    },
+    "rdsSecurityGroupId": {
+      "Default": "/TEST/identity/gatehouse/rdsSecurityGroup/id",
+      "Description": "ID of database security group.",
+      "Type": "AWS::SSM::Parameter::Value<String>",
     },
   },
   "Resources": {
@@ -580,7 +586,9 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
     "LoadBalancerGatehouseSecurityGrouptogatehouseTESTrdsSecurityGroup6652430490005CC1E089": {
       "Properties": {
         "Description": "Load balancer to target",
-        "DestinationSecurityGroupId": "sg-12345678",
+        "DestinationSecurityGroupId": {
+          "Ref": "rdsSecurityGroupId",
+        },
         "FromPort": 9000,
         "GroupId": {
           "Fn::GetAtt": [
@@ -838,7 +846,9 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
                 "GroupId",
               ],
             },
-            "sg-12345678",
+            {
+              "Ref": "rdsSecurityGroupId",
+            },
           ],
           "TagSpecifications": [
             {

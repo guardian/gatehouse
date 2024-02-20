@@ -15,7 +15,6 @@ new Gatehouse(app, 'gatehouse-CODE', {
     env,
     stage: 'CODE',
     domainName: 'gatehouse-origin.code.dev-guardianapis.com',
-    rdsSecurityGroupId: 'sg-ce0783b5',
 });
 
 new Gatehouse(app, 'gatehouse-PROD', {
@@ -23,5 +22,4 @@ new Gatehouse(app, 'gatehouse-PROD', {
     env,
     stage: 'PROD',
     domainName: 'gatehouse-origin.guardianapis.com',
-    rdsSecurityGroupId: 'sg-f433b78f',
 });

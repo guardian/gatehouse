@@ -9,7 +9,6 @@ describe('The Gatehouse stack', () => {
             stack: 'identity',
             stage: 'TEST',
             domainName: 'id.test.dev-guardianapis.com',
-            rdsSecurityGroupId: 'sg-12345678',
         });
         const template = Template.fromStack(stack);
         expect(template.toJSON()).toMatchSnapshot();
