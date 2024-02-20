@@ -12,11 +12,10 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      # Required by aws-actions/configure-aws-credentials
-      id-token: write
       # Required by actions/checkout
       contents: read
       # Required by guardian/actions-riff-raff
+      id-token: write
       pull-requests: write
 
     steps:
@@ -39,15 +38,10 @@ jobs:
       # Build CDK and Play (in sequence)
       - run: scripts/ci
 
-      # Fetch AWS credentials, allowing us to upload build artefacts to S3
-      - uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
-          aws-region: eu-west-1
-
       # Upload our build artifacts to S3
       - uses: guardian/actions-riff-raff@v4
         with:
+          roleArn: ${{ secrets.GU_RIFF_RAFF_ROLE_ARN }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
           projectName: identity:gatehouse
           configPath: cdk/cdk.out/riff-raff.yaml
