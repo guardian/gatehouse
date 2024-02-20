@@ -33,7 +33,14 @@ classDiagram
 
 1. Set up a [local PostgreSQL service](https://github.com/guardian/identity-platform/tree/main/postgres) listening on port 5555.
 2. Install local AWS credentials for the Identity account.
-3. Run the app with `sbt run`.
+3. Set the `AWS_PROFILE` environment variable to `identity`:
+   ```bash  
+   export AWS_PROFILE=identity
+   ```
+4. Run the app:
+   ```
+   sbt run
+   ```
 
 ## Configuration
 
