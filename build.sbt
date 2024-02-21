@@ -28,7 +28,7 @@ lazy val root = (project in file("."))
         exclude ("com.typesafe", "ssl-config-core_2.13"),
       // Using milestone version of play-slick until a stable Scala 3 version has been released
       "org.playframework" %% "play-slick" % "6.0.0-M2",
-      "org.postgresql" % "postgresql" % "42.5.4",
+      "org.postgresql" % "postgresql" % "42.5.5",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
       "com.h2database" % "h2" % "2.2.224" % Test,
     ),
