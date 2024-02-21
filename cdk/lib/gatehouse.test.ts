@@ -8,7 +8,7 @@ describe('The Gatehouse stack', () => {
         const stack = new Gatehouse(app, 'gatehouse-TEST', {
             stack: 'identity',
             stage: 'TEST',
-            domainName: 'id.test.dev-guardianapis.com'
+            domainName: 'id.test.dev-guardianapis.com',
         });
         const template = Template.fromStack(stack);
         expect(template.toJSON()).toMatchSnapshot();

@@ -21,21 +21,32 @@ class AppLoader extends ApplicationLoader {
   private def buildConfig(context: Context): Try[Config] = {
     val credentialsProvider = DefaultCredentialsProvider.create()
     val isDev = context.environment.mode == Mode.Dev
-    for {
-      identity <-
-        if (isDev)
-          Success(AwsIdentity(app = appName, stack = "identity", stage = "DEV", region = "eu-west-1"))
-        else
-          AppIdentity.whoAmI(defaultAppName = appName, credentialsProvider)
-      config <- Try(ConfigurationLoader.load(identity, credentialsProvider) { case identity: AwsIdentity =>
+
+    def configFor(appIdentity: AppIdentity) = {
+      ConfigurationLoader.load(appIdentity, credentialsProvider) { case identity: AwsIdentity =>
         ComposedConfigurationLocation(
           List(
             SSMConfigurationLocation.default(identity),
             ResourceConfigurationLocation(s"${identity.stage}.conf"),
           )
         )
-      })
-    } yield config
+      }
+    }
+
+    // To validate the SSL certificate of the RDS instance - remove this and the associated params when we no longer use RDS
+    def configureTrustStore(config: Config) = {
+      System.setProperty("javax.net.ssl.trustStore", config.getString("trustStore.path"))
+      System.setProperty("javax.net.ssl.trustStorePassword", config.getString("trustStore.password"))
+    }
+
+    if (isDev)
+      Try(configFor(AwsIdentity(app = appName, stack = "identity", stage = "DEV", region = "eu-west-1")))
+    else
+      for {
+        identity <- AppIdentity.whoAmI(defaultAppName = appName, credentialsProvider)
+        config <- Try(configFor(identity))
+        _ <- Try(configureTrustStore(config))
+      } yield config
   }
 
   override def load(context: Context): Application = {

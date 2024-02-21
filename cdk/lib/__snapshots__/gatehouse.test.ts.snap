@@ -5,6 +5,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
   "Metadata": {
     "gu:cdk:constructs": [
       "GuPolicy",
+      "GuStringParameter",
       "GuVpcParameter",
       "GuSubnetListParameter",
       "GuSubnetListParameter",
@@ -68,6 +69,11 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "Default": "/account/vpc/primary/subnets/public",
       "Description": "A list of public subnets",
       "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
+    },
+    "rdsSecurityGroupId": {
+      "Default": "/TEST/identity/gatehouse/rdsSecurityGroup/id",
+      "Description": "ID of database security group.",
+      "Type": "AWS::SSM::Parameter::Value<String>",
     },
   },
   "Resources": {
@@ -577,6 +583,24 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       },
       "Type": "AWS::EC2::SecurityGroupEgress",
     },
+    "LoadBalancerGatehouseSecurityGrouptogatehouseTESTrdsSecurityGroup6652430490005CC1E089": {
+      "Properties": {
+        "Description": "Load balancer to target",
+        "DestinationSecurityGroupId": {
+          "Ref": "rdsSecurityGroupId",
+        },
+        "FromPort": 9000,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "LoadBalancerGatehouseSecurityGroupDD25BC00",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 9000,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
+    },
     "ParameterStoreReadGatehouseF4274D8F": {
       "Properties": {
         "PolicyDocument": {
@@ -821,6 +845,9 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
                 "WazuhSecurityGroup",
                 "GroupId",
               ],
+            },
+            {
+              "Ref": "rdsSecurityGroupId",
             },
           ],
           "TagSpecifications": [
