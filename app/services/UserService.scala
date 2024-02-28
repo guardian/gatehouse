@@ -4,9 +4,7 @@ import model.User
 
 import scala.concurrent.Future
 
-trait UserService extends UpstreamService {
-
-  def healthCheck(): Future[Unit]
+trait UserService extends Service {
 
   def fetchUserByIdentityId(id: String): Future[Option[User]]
 }
