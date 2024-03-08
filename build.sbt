@@ -26,7 +26,6 @@ lazy val root = (project in file("."))
         exclude ("org.scala-lang.modules", "scala-parser-combinators_2.13")
         exclude ("com.fasterxml.jackson.module", "jackson-module-scala_2.13")
         exclude ("com.typesafe", "ssl-config-core_2.13"),
-      // Using milestone version of play-slick until a stable Scala 3 version has been released
       "org.playframework" %% "play-slick" % "6.1.0",
       "org.postgresql" % "postgresql" % "42.7.2",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
