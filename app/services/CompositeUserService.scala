@@ -4,23 +4,20 @@ import model.User
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class CompositeUserService(okta: UserService, identityDb: LegacyUserService)(implicit ctx: ExecutionContext)
-    extends UserService {
+class CompositeUserService(okta: OktaUserService, identityDb: LegacyIdentityDbUserService)(implicit
+    ctx: ExecutionContext
+) extends UserService {
 
   def healthCheck(): Future[Unit] = for {
     _ <- okta.healthCheck()
     _ <- identityDb.healthCheck()
   } yield ()
 
-  def fetchUserByIdentityId(id: String): Future[Option[User]] = for {
-    optOktaUser <- okta.fetchUserByIdentityId(id)
-    optLegacyUser <- identityDb.fetchByIdentityId(id)
-  } yield {
-    (optOktaUser, optLegacyUser) match {
-      case (Some(oktaUser), Some(legacyUser)) =>
-        Some(oktaUser.copy(userName = legacyUser.userName, permissions = legacyUser.permissions))
-      case (Some(oktaUser), None) => Some(oktaUser)
-      case _                      => None
-    }
-  }
+  def fetchUserByIdentityId(identityId: String): Future[Option[User]] = for {
+    optLegacyUser <- identityDb.fetchUserByIdentityId(identityId)
+    optOktaUser <- optLegacyUser.flatMap(_.oktaId.map(okta.fetchUserByOktaId)).getOrElse(Future.successful(None))
+  } yield for {
+    oktaUser <- optOktaUser
+    legacyUser <- optLegacyUser
+  } yield oktaUser.copy(userName = legacyUser.userName, permissions = legacyUser.permissions)
 }

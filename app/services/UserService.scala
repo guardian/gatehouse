@@ -6,5 +6,5 @@ import scala.concurrent.Future
 
 trait UserService extends Service {
 
-  def fetchUserByIdentityId(id: String): Future[Option[User]]
+  def fetchUserByIdentityId(identityId: String): Future[Option[User]]
 }

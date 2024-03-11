@@ -11,8 +11,7 @@ import scala.util.Failure
 import scala.util.chaining.*
 
 class LegacyIdentityDbUserService(val dbConfig: DatabaseConfig[JdbcProfile])(implicit ctx: ExecutionContext)
-    extends LegacyUserService
-    with Logging {
+    extends Logging {
 
   import dbConfig.profile.api.*
 
@@ -26,12 +25,12 @@ class LegacyIdentityDbUserService(val dbConfig: DatabaseConfig[JdbcProfile])(imp
         case _                  => ()
       })
 
-  def fetchByIdentityId(id: String): Future[Option[LegacyUser]] =
+  def fetchUserByIdentityId(id: String): Future[Option[LegacyUser]] =
     db.run(
-      sql"SELECT id, braze_uuid, jdoc->'publicFields'->'username', jdoc->'consents' FROM users WHERE id = $id LIMIT 1"
-        .as[(String, Option[String], Option[String], String)]
-    ).map(_.map { case (identityId, brazeId, userName, permissionsJsonStr) =>
-      LegacyUser(identityId, brazeId, userName, toPermissions(permissionsJsonStr))
+      sql"SELECT id, okta_id, braze_uuid, jdoc->'publicFields'->'username', jdoc->'consents' FROM users WHERE id = $id LIMIT 1"
+        .as[(String, Option[String], Option[String], Option[String], String)]
+    ).map(_.map { case (identityId, oktaId, brazeId, userName, permissionsJsonStr) =>
+      LegacyUser(identityId, oktaId, brazeId, userName, toPermissions(permissionsJsonStr))
     }.headOption)
 
   private def toPermissions(jsonStr: String): Seq[Permission] = {
@@ -46,6 +45,7 @@ class LegacyIdentityDbUserService(val dbConfig: DatabaseConfig[JdbcProfile])(imp
 
 case class LegacyUser(
     identityId: String,
+    oktaId: Option[String],
     brazeId: Option[String],
     userName: Option[String],
     permissions: Seq[Permission]

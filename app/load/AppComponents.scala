@@ -2,6 +2,9 @@ package load
 
 import auth.AuthorisedAction
 import com.gu.identity.auth.{OktaAudience, OktaAuthService, OktaIssuerUrl, OktaTokenValidationConfig}
+import com.okta.sdk.client.AuthorizationMode.PRIVATE_KEY
+import com.okta.sdk.client.Clients
+import com.okta.sdk.resource.api.UserApi
 import controllers.{HealthCheckController, UserController}
 import logging.RequestLoggingFilter
 import play.api.ApplicationLoader.Context
@@ -14,6 +17,8 @@ import router.Routes
 import services.{CompositeUserService, LegacyIdentityDbUserService, OktaUserService}
 import slick.jdbc.JdbcProfile
 
+import scala.jdk.CollectionConverters.*
+
 class AppComponents(context: Context)
     extends BuiltInComponentsFromContext(context)
     with HttpFiltersComponents
@@ -21,6 +26,18 @@ class AppComponents(context: Context)
     with AhcWSComponents {
 
   override def httpFilters: Seq[EssentialFilter] = super.httpFilters :+ new RequestLoggingFilter(materializer)
+
+  private lazy val oktaOrgUrl = s"https://${configuration.get[String]("oktaApi.domain")}"
+
+  private lazy val oktaApiClient =
+    Clients
+      .builder()
+      .setOrgUrl(oktaOrgUrl)
+      .setClientId(configuration.get[String]("oktaApi.clientId"))
+      .setAuthorizationMode(PRIVATE_KEY)
+      .setPrivateKey(configuration.get[String]("oktaApi.privateKey"))
+      .setScopes(configuration.get[Seq[String]]("oktaApi.scopes").toSet.asJava)
+      .build()
 
   private lazy val authService = OktaAuthService(
     OktaTokenValidationConfig(
@@ -34,7 +51,7 @@ class AppComponents(context: Context)
     slickApi.dbConfig[JdbcProfile](DbName("legacyIdentityDb"))
   )
 
-  private lazy val oktaUserService = new OktaUserService(configuration, wsClient)
+  private lazy val oktaUserService = new OktaUserService(new UserApi(oktaApiClient), oktaOrgUrl, wsClient)
 
   private lazy val userService = new CompositeUserService(oktaUserService, legacyIdentityDbUserService)
 
