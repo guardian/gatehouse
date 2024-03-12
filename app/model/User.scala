@@ -1,7 +1,8 @@
 package model
 
-import play.api.libs.json.{Json, Writes}
 import com.okta.sdk.resource.model.User as OktaUser
+import play.api.libs.json.{Json, Writes}
+import utils.StringHelper.nonNullNonEmpty
 
 case class User(
     oktaId: String,
@@ -22,7 +23,7 @@ object User {
     User(
       oktaId = oktaUser.getId,
       legacyIdentityId = requiredCustomProfileField(oktaUser, "legacyIdentityId"),
-      emailAddress = optionalProfileField(oktaUser.getProfile.getEmail),
+      emailAddress = nonNullNonEmpty(oktaUser.getProfile.getEmail),
       emailValidated = customProfileField(oktaUser, "emailValidated").flatMap(_.toBooleanOption),
       userName = None,
       name = Name.fromOktaUser(oktaUser),
@@ -32,9 +33,6 @@ object User {
       permissions = Nil
     )
   }
-
-  def optionalProfileField(fieldValue: String): Option[String] =
-    Option(fieldValue).filter(!_.isBlank)
 
   def customProfileField(oktaUser: OktaUser, fieldName: String): Option[String] =
     Option(oktaUser.getProfile.getAdditionalProperties.get(fieldName)).collect {

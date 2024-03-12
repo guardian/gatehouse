@@ -1,4 +1,4 @@
-package services
+package utils
 
 import scala.concurrent.{ExecutionContext, Future, blocking}
 import scala.util.{Failure, Success, Try}

@@ -1,7 +1,8 @@
 package model
 
 import com.okta.sdk.resource.model.User as OktaUser
-import User.{customProfileField, optionalProfileField}
+import model.User.customProfileField
+import utils.StringHelper.nonNullNonEmpty
 
 case class Address(
     line1: Option[String],
@@ -20,8 +21,8 @@ object Address {
       line2 = customProfileField(oktaUser, "address2"),
       line3 = customProfileField(oktaUser, "address3"),
       line4 = customProfileField(oktaUser, "address4"),
-      postcode = optionalProfileField(oktaUser.getProfile.getZipCode),
-      country = optionalProfileField(oktaUser.getProfile.getCountryCode).map(toCountry)
+      postcode = nonNullNonEmpty(oktaUser.getProfile.getZipCode),
+      country = nonNullNonEmpty(oktaUser.getProfile.getCountryCode).map(toCountry)
     )
 
   // List copied from Identity API
