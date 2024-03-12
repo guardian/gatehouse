@@ -15,15 +15,12 @@ classDiagram
     class UserService
     class CompositeUserService
     class OktaUserService
-    class LegacyUserService
     class legacyIdentityDbUserService
 
     UserController <--> UserService: User
     UserService <|-- CompositeUserService
-    UserService <|-- OktaUserService
-    LegacyUserService <|-- legacyIdentityDbUserService
     CompositeUserService --* OktaUserService
-    CompositeUserService --* LegacyUserService
+    CompositeUserService --* legacyIdentityDbUserService
 
     UserService: healthCheck()
     UserService: fetchUserByIdentityId()
