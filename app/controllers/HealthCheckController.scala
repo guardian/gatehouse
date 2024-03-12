@@ -2,17 +2,17 @@ package controllers
 
 import play.api.*
 import play.api.mvc.*
-import services.UpstreamService
+import services.UserService
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class HealthCheckController(val controllerComponents: ControllerComponents, upstreamServices: Seq[UpstreamService])(
-    implicit ec: ExecutionContext
+class HealthCheckController(val controllerComponents: ControllerComponents, userService: UserService)(implicit
+    ec: ExecutionContext
 ) extends BaseController {
 
   def healthCheck(): Action[AnyContent] = Action.async(
-    Future
-      .sequence(upstreamServices.map(_.healthCheck()))
+    userService
+      .healthCheck()
       .map { _ => Ok("OK") }
       .recover { case err => InternalServerError(err.getMessage) }
   )

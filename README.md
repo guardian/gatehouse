@@ -13,20 +13,18 @@ The main components of the app are:
 classDiagram
     class UserController
     class UserService
-    class legacyIdentityDbUserService
-    class OktaUserService
-    <<NotCreatedYet>> OktaUserService
     class CompositeUserService
-    <<NotCreatedYet>> CompositeUserService
+    class OktaUserService
+    class legacyIdentityDbUserService
+
     UserController <--> UserService: User
-    UserService <|-- legacyIdentityDbUserService
     UserService <|-- CompositeUserService
-    UserService <|-- OktaUserService
+    CompositeUserService --* OktaUserService
+    CompositeUserService --* legacyIdentityDbUserService
+
     UserService: healthCheck()
     UserService: fetchUserByIdentityId()
     UserService: ...()
-    CompositeUserService --* legacyIdentityDbUserService
-    CompositeUserService --* OktaUserService
 ```
 
 ## Running the app locally
