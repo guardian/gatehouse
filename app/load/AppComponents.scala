@@ -29,8 +29,8 @@ class AppComponents(context: Context)
 
   private lazy val oktaOrgUrl = s"https://${configuration.get[String]("oktaApi.domain")}"
 
-  private lazy val oktaApiClient =
-    Clients
+  private lazy val oktaUserApi = {
+    val apiClient = Clients
       .builder()
       .setOrgUrl(oktaOrgUrl)
       .setClientId(configuration.get[String]("oktaApi.clientId"))
@@ -38,6 +38,8 @@ class AppComponents(context: Context)
       .setPrivateKey(configuration.get[String]("oktaApi.privateKey"))
       .setScopes(configuration.get[Seq[String]]("oktaApi.scopes").toSet.asJava)
       .build()
+    new UserApi(apiClient)
+  }
 
   private lazy val authService = OktaAuthService(
     OktaTokenValidationConfig(
@@ -51,7 +53,7 @@ class AppComponents(context: Context)
     slickApi.dbConfig[JdbcProfile](DbName("legacyIdentityDb"))
   )
 
-  private lazy val oktaUserService = new OktaUserService(new UserApi(oktaApiClient), oktaOrgUrl, wsClient)
+  private lazy val oktaUserService = new OktaUserService(oktaUserApi, oktaOrgUrl, wsClient)
 
   private lazy val userService = new CompositeUserService(oktaUserService, legacyIdentityDbUserService)
 

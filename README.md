@@ -72,3 +72,9 @@ the `conf` directory. These might be values that we expose in browsers, for exam
 
 Finally, settings that aren't private and are the same for all deployment stages are set in the `conf/application.conf`
 file.
+
+### Okta-specific configuration
+
+TODO: Instructions on how to generate an Okta access token locally.     
+We use the Okta Code org locally because this makes it easier to develop and test with users that have already been
+registered in [Code gateway](https://profile.code.dev-theguardian.com/).
