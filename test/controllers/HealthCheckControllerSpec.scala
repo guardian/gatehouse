@@ -2,7 +2,6 @@ package controllers
 
 import load.AppComponents
 import org.mockito.Mockito.when
-import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.*
 import org.scalatestplus.play.components.OneAppPerTestWithComponents
@@ -27,9 +26,9 @@ class HealthCheckControllerSpec extends PlaySpec with OneAppPerTestWithComponent
       when(userService.healthCheck()).thenReturn(Future.successful(()))
       val controller = new HealthCheckController(stubControllerComponents(), userService)
       val healthCheck = controller.healthCheck().apply(FakeRequest(GET, path))
-      status(healthCheck) shouldBe OK
-      contentType(healthCheck) shouldBe Some("text/plain")
-      contentAsString(healthCheck) shouldBe "OK"
+      status(healthCheck) mustBe OK
+      contentType(healthCheck) mustBe Some("text/plain")
+      contentAsString(healthCheck) mustBe "OK"
     }
   }
 }

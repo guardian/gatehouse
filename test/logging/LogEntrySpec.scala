@@ -1,6 +1,5 @@
 package logging
 
-import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatestplus.play.*
 import play.api.mvc.Results.Ok
 import play.api.test.*
@@ -12,10 +11,10 @@ class LogEntrySpec extends PlaySpec {
     val request = FakeRequest(GET, "/").withHeaders(REFERER -> "Referrer")
     val entry = LogEntry.requestAndResponse(request, response = Ok.withHeaders(CONTENT_LENGTH -> "11"), duration = 7)
     "give correct message" in {
-      entry.message shouldBe """127.0.0.1 - "GET / HTTP/1.1" 200 11 "Referrer" 7ms"""
+      entry.message mustBe """127.0.0.1 - "GET / HTTP/1.1" 200 11 "Referrer" 7ms"""
     }
     "give correct fields" in {
-      entry.otherFields shouldBe Map(
+      entry.otherFields mustBe Map(
         "type" -> "access",
         "origin" -> "127.0.0.1",
         "referrer" -> "Referrer",
@@ -33,10 +32,10 @@ class LogEntrySpec extends PlaySpec {
     val request = FakeRequest(GET, "/").withHeaders(REFERER -> "Referrer")
     val entry = LogEntry.error(request, duration = 17)
     "give correct message" in {
-      entry.message shouldBe """127.0.0.1 - "GET / HTTP/1.1" ERROR "Referrer" 17ms"""
+      entry.message mustBe """127.0.0.1 - "GET / HTTP/1.1" ERROR "Referrer" 17ms"""
     }
     "give correct fields" in {
-      entry.otherFields shouldBe Map(
+      entry.otherFields mustBe Map(
         "type" -> "access",
         "origin" -> "127.0.0.1",
         "referrer" -> "Referrer",

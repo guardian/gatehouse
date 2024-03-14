@@ -13,12 +13,14 @@ import scala.concurrent.{ExecutionContext, Future}
   * the action returns a 401 Unauthorized response. If the token is valid but doesn't have the required scopes, the
   * action returns a 403 Forbidden response.
   */
-class AuthorisedAction(oktaAuthService: OktaAuthService, requiredScopes: List[AccessScope])(implicit
+class AuthorisedAction(
+    oktaAuthService: OktaAuthService,
+    val parser: BodyParser[AnyContent],
+    requiredScopes: List[AccessScope]
+)(implicit
     val executionContext: ExecutionContext
 ) extends ActionBuilder[RequestWithClaims, AnyContent]
     with ActionRefiner[Request, RequestWithClaims] {
-
-  def parser: BodyParser[AnyContent] = BodyParsers.utils.ignore(AnyContentAsEmpty: AnyContent)
 
   protected def refine[A](request: Request[A]): Future[Either[Result, RequestWithClaims[A]]] = {
     Helpers.fetchBearerTokenFromAuthHeader(request.headers.get) match {
