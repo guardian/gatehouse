@@ -8,10 +8,9 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.libs.ws.WSClient
+import play.api.test.Helpers.*
 
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.Duration
 import scala.jdk.CollectionConverters.*
 import scala.util.Failure
 
@@ -49,7 +48,7 @@ class OktaUserServiceSpec extends PlaySpec with MockitoSugar {
       )
 
       val result = oktaUserService.fetchUserByOktaId("oktaId")
-      Await.result(result, Duration.Inf) mustBe Some(user)
+      await(result) mustBe Some(user)
     }
 
     "give no user when one doesn't exist" in {
@@ -61,7 +60,7 @@ class OktaUserServiceSpec extends PlaySpec with MockitoSugar {
       val oktaUserService = new OktaUserService(userApi, "orgUrl", mock[WSClient])
 
       val result = oktaUserService.fetchUserByOktaId("oktaId")
-      Await.result(result, Duration.Inf) mustBe None
+      await(result) mustBe None
     }
 
     "give a failed future when API fails" in {

@@ -57,7 +57,7 @@ class AppComponents(context: Context)
 
   private lazy val userService = new CompositeUserService(oktaUserService, legacyIdentityDbUserService)
 
-  private lazy val authorisedAction = new AuthorisedAction(authService, _)
+  private lazy val authorisedAction = new AuthorisedAction(authService, playBodyParsers.defaultBodyParser, _)
 
   private lazy val healthCheckController = new HealthCheckController(controllerComponents, userService)
 
