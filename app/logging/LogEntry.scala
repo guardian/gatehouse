@@ -2,6 +2,7 @@ package logging
 
 import play.api.http.HeaderNames.*
 import play.api.mvc.{RequestHeader, Result}
+import utils.RequestHelper.origin
 
 case class LogEntry(message: String, otherFields: Map[String, Any])
 
@@ -10,7 +11,7 @@ private[logging] object LogEntry {
   private def commonFields(request: RequestHeader, duration: Long) =
     Map(
       "type" -> "access",
-      "origin" -> request.headers.get(X_FORWARDED_FOR).getOrElse(request.remoteAddress),
+      "origin" -> origin(request),
       "referrer" -> request.headers.get(REFERER).getOrElse(""),
       "method" -> request.method,
       "duration" -> duration,

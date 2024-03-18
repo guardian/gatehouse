@@ -44,7 +44,7 @@ class AuthorisedActionSpec extends PlaySpec {
       val result = action(Ok)(request)
       status(result) shouldBe UNAUTHORIZED
       contentType(result) shouldBe Some("text/plain")
-      contentAsString(result) shouldBe "Token is invalid or expired"
+      contentAsString(result) shouldBe "Access token validation failed."
     }
 
     "return 403 when the token is valid but doesn't have the required scopes" in {
@@ -57,7 +57,7 @@ class AuthorisedActionSpec extends PlaySpec {
       val result = action(Ok)(request)
       status(result) shouldBe FORBIDDEN
       contentType(result) shouldBe Some("text/plain")
-      contentAsString(result) shouldBe "Token is missing required scope(s): requiredScope"
+      contentAsString(result) shouldBe "Access token validation failed."
     }
 
     "return 200 when the token is valid and has the required scopes" in {

@@ -1,8 +1,10 @@
 package auth
 
 import com.gu.identity.auth.*
+import play.api.Logging
 import play.api.mvc.*
 import play.api.mvc.Results.*
+import utils.RequestHelper.origin
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -20,7 +22,8 @@ class AuthorisedAction(
 )(implicit
     val executionContext: ExecutionContext
 ) extends ActionBuilder[RequestWithClaims, AnyContent]
-    with ActionRefiner[Request, RequestWithClaims] {
+    with ActionRefiner[Request, RequestWithClaims]
+    with Logging {
 
   protected def refine[A](request: Request[A]): Future[Either[Result, RequestWithClaims[A]]] = {
     Helpers.fetchBearerTokenFromAuthHeader(request.headers.get) match {
@@ -31,7 +34,10 @@ class AuthorisedAction(
           .redeem(
             {
               case OktaValidationException(err: ValidationError) =>
-                Left(new Status(err.suggestedHttpResponseCode)(err.message))
+                logger.info(
+                  s"Token validation failed for request from ${origin(request)}: ${request.method} ${request.path}: ${err.message}"
+                )
+                Left(new Status(err.suggestedHttpResponseCode)("Access token validation failed."))
               case err => Left(InternalServerError(err.getMessage))
             },
             claims => Right(RequestWithClaims(claims, request))
