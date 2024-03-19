@@ -26,7 +26,7 @@ class UserSpec extends PlaySpec with MockitoSugar {
           line3 = Some("3"),
           line4 = None,
           postcode = Some("W1A 1AA"),
-          country = Some("United Kingdom")
+          country = Some(Country.GB)
         ),
         phoneNumber = Some(PhoneNumber(44, "12345")),
         registrationLocation = Some("online"),

@@ -59,7 +59,7 @@ object User {
         "addressLine3" -> user.address.line3,
         "addressLine4" -> user.address.line4,
         "postcode" -> user.address.postcode,
-        "country" -> user.address.country,
+        "country" -> user.address.country.map(_.name),
         "countryCode" -> user.phoneNumber.map(_.countryCode),
         "localNumber" -> user.phoneNumber.map(_.localNumber),
         "registrationLocation" -> user.registrationLocation,
