@@ -27,7 +27,7 @@ class LegacyIdentityDbUserService(val dbConfig: DatabaseConfig[JdbcProfile])(imp
 
   def fetchUserByIdentityId(id: String): Future[Option[LegacyUser]] =
     db.run(
-      sql"SELECT id, okta_id, braze_uuid, jdoc->'publicFields'->'username', jdoc->'consents' FROM users WHERE id = $id LIMIT 1"
+      sql"SELECT id, okta_id, braze_uuid, jdoc->'publicFields'->>'username', jdoc->'consents' FROM users WHERE id = $id LIMIT 1"
         .as[(String, Option[String], Option[String], Option[String], String)]
     ).map(_.map { case (identityId, oktaId, brazeId, userName, permissionsJsonStr) =>
       LegacyUser(identityId, oktaId, brazeId, userName, toPermissions(permissionsJsonStr))
