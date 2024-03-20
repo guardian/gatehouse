@@ -261,8 +261,8 @@ enum Country(
 object Country {
   private val countriesByName: Map[String, Country] = Country.values.map(c => c.name -> c).toMap
 
-  def getCountryByName(name: String): Option[Country] = countriesByName.get(name)
+  def findByName(name: String): Option[Country] = countriesByName.get(name)
 
-  def getCountryByCode(code: String): Option[Country] = Try(Country.valueOf(code)).toOption
+  def findByCode(code: String): Option[Country] = Try(Country.valueOf(code)).toOption
 
 }

@@ -22,7 +22,7 @@ object Address {
       line3 = customProfileField(oktaUser, "address3"),
       line4 = customProfileField(oktaUser, "address4"),
       postcode = nonNullNonEmpty(oktaUser.getProfile.getZipCode),
-      country = Country.getCountryByCode(oktaUser.getProfile.getCountryCode)
+      country = Country.findByCode(oktaUser.getProfile.getCountryCode)
     )
 
 }
