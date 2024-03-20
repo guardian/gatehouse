@@ -35,7 +35,7 @@ class AddressSpec extends PlaySpec with MockitoSugar {
         Some("line3"),
         Some("line4"),
         Some("postcode"),
-        Some("United States")
+        Some(Country.US)
       )
     }
 
@@ -63,7 +63,7 @@ class AddressSpec extends PlaySpec with MockitoSugar {
         Some("line3"),
         None,
         None,
-        Some("United States")
+        Some(Country.US)
       )
     }
 
@@ -95,34 +95,6 @@ class AddressSpec extends PlaySpec with MockitoSugar {
       )
     }
 
-    "correctly convert OktaUser with invalid country code" in {
-      val additionalProperties = Map(
-        "address1" -> "line1",
-        "address2" -> "line2",
-        "address3" -> "line3",
-        "address4" -> "line4"
-      ).asJava
-
-      val profile = mock[UserProfile]
-      when(profile.getZipCode).thenReturn("postcode")
-      when(profile.getCountryCode).thenReturn("Unknown")
-      when(profile.getAdditionalProperties).thenReturn(additionalProperties)
-
-      val oktaUser = mock[OktaUser]
-      when(oktaUser.getProfile).thenReturn(profile)
-      oktaUser.setProfile(profile)
-
-      val address = Address.fromOktaUser(oktaUser)
-      address mustBe Address(
-        Some("line1"),
-        Some("line2"),
-        Some("line3"),
-        Some("line4"),
-        Some("postcode"),
-        Some("Unknown")
-      )
-    }
-
     "correctly convert OktaUser with valid country code" in {
       val additionalProperties = Map(
         "address1" -> "line1",
@@ -147,7 +119,7 @@ class AddressSpec extends PlaySpec with MockitoSugar {
         Some("line3"),
         Some("line4"),
         Some("postcode"),
-        Some("United States")
+        Some(Country.US)
       )
     }
   }

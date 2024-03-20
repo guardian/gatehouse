@@ -9,7 +9,7 @@ object Name {
 
   def fromOktaUser(oktaUser: OktaUser): Name =
     Name(
-      title = nonNullNonEmpty(oktaUser.getProfile.getTitle),
+      title = nonNullNonEmpty(oktaUser.getProfile.getHonorificPrefix),
       firstName = nonNullNonEmpty(oktaUser.getProfile.getFirstName),
       lastName = nonNullNonEmpty(oktaUser.getProfile.getLastName)
     )

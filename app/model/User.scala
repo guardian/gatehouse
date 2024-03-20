@@ -59,8 +59,8 @@ object User {
         "addressLine3" -> user.address.line3,
         "addressLine4" -> user.address.line4,
         "postcode" -> user.address.postcode,
-        "country" -> user.address.country,
-        "countryCode" -> user.phoneNumber.map(_.countryCode),
+        "isoCountryCode" -> user.address.country.map(_.code),
+        "internationalDiallingCode" -> user.phoneNumber.map(_.countryCode),
         "localNumber" -> user.phoneNumber.map(_.localNumber),
         "registrationLocation" -> user.registrationLocation,
         "permissions" -> user.permissions

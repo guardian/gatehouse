@@ -26,7 +26,7 @@ class UserSpec extends PlaySpec with MockitoSugar {
           line3 = Some("3"),
           line4 = None,
           postcode = Some("W1A 1AA"),
-          country = Some("United Kingdom")
+          country = Some(Country.GB)
         ),
         phoneNumber = Some(PhoneNumber(44, "12345")),
         registrationLocation = Some("online"),
@@ -46,8 +46,8 @@ class UserSpec extends PlaySpec with MockitoSugar {
           |"addressLine3":"3",
           |"addressLine4":null,
           |"postcode":"W1A 1AA",
-          |"country":"United Kingdom",
-          |"countryCode":44,
+          |"isoCountryCode":"GB",
+          |"internationalDiallingCode":44,
           |"localNumber":"12345",
           |"registrationLocation":"online",
           |"permissions":[{"id":"p1","permitted":true},{"id":"p2","permitted":false},{"id":"p3","permitted":true}]
