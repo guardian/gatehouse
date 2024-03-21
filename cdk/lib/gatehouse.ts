@@ -55,7 +55,7 @@ export class Gatehouse extends GuStack {
                 enabled: true,
                 systemdUnitName: 'gatehouse'
             },
-            imageRecipe: 'arm-identity-base-jammy-java11-cdk-base',
+            imageRecipe: 'arm-identity-base-jammy-java21-cdk-base',
             roleConfiguration: {
                 additionalPolicies: [readAppSsmParamsPolicy],
             },
