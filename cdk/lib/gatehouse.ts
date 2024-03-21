@@ -7,7 +7,7 @@ import {GuPolicy, ReadParametersByName} from '@guardian/cdk/lib/constructs/iam';
 import type {App} from 'aws-cdk-lib';
 import {Duration} from 'aws-cdk-lib';
 import {InstanceClass, InstanceSize, InstanceType, SecurityGroup} from 'aws-cdk-lib/aws-ec2';
-import {Effect, PolicyStatement} from "aws-cdk-lib/aws-iam";
+import {Effect, PolicyStatement} from 'aws-cdk-lib/aws-iam';
 import {ParameterDataType, ParameterTier, StringParameter} from 'aws-cdk-lib/aws-ssm';
 
 export interface GatehouseStackProps extends GuStackProps {
@@ -32,11 +32,11 @@ export class Gatehouse extends GuStack {
             statements: [new PolicyStatement({
                 effect: Effect.ALLOW,
                 actions: [
-                    "xray:PutTraceSegments",
-                    "xray:PutTelemetryRecords",
-                    "xray:GetSamplingRules",
-                    "xray:GetSamplingTargets",
-                    "xray:GetSamplingStatisticSummaries",
+                    'xray:PutTraceSegments',
+                    'xray:PutTelemetryRecords',
+                    'xray:GetSamplingRules',
+                    'xray:GetSamplingTargets',
+                    'xray:GetSamplingStatisticSummaries',
                 ],
                 resources: ['*']
             })]
