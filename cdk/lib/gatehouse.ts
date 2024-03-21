@@ -7,6 +7,7 @@ import {GuPolicy, ReadParametersByName} from '@guardian/cdk/lib/constructs/iam';
 import type {App} from 'aws-cdk-lib';
 import {Duration} from 'aws-cdk-lib';
 import {InstanceClass, InstanceSize, InstanceType, SecurityGroup} from 'aws-cdk-lib/aws-ec2';
+import {Effect, PolicyStatement} from "aws-cdk-lib/aws-iam";
 import {ParameterDataType, ParameterTier, StringParameter} from 'aws-cdk-lib/aws-ssm';
 
 export interface GatehouseStackProps extends GuStackProps {
@@ -25,6 +26,20 @@ export class Gatehouse extends GuStack {
 
         const readAppSsmParamsPolicy = new GuPolicy(this, 'ReadAppSsmParamsPolicy', {
             statements: [new ReadParametersByName(this, {app: ec2App})]
+        })
+
+        const xrayTelemetryPolicy = new GuPolicy(this, 'XrayTelemetryPolicy', {
+            statements: [new PolicyStatement({
+                effect: Effect.ALLOW,
+                actions: [
+                    "xray:PutTraceSegments",
+                    "xray:PutTelemetryRecords",
+                    "xray:GetSamplingRules",
+                    "xray:GetSamplingTargets",
+                    "xray:GetSamplingStatisticSummaries",
+                ],
+                resources: ['*']
+            })]
         })
 
         const rdsSecurityGroupId = new GuStringParameter(this, 'rdsSecurityGroupId', {
@@ -57,7 +72,10 @@ export class Gatehouse extends GuStack {
             },
             imageRecipe: 'arm-identity-base-jammy-java21-cdk-base',
             roleConfiguration: {
-                additionalPolicies: [readAppSsmParamsPolicy],
+                additionalPolicies: [
+                    readAppSsmParamsPolicy,
+                    xrayTelemetryPolicy,
+                ],
             },
         });
 
