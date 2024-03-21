@@ -3,6 +3,7 @@ lazy val root = (project in file("."))
   .settings(
     name := "gatehouse",
     version := "0.1.0-SNAPSHOT",
+    maintainer := "Guardian Identity team",
     scalaVersion := "3.3.3",
     scalacOptions ++= Seq(
       "-explain",
@@ -11,7 +12,12 @@ lazy val root = (project in file("."))
     ),
     scalafmtOnCompile := true,
     Universal / javaOptions ++= Seq(
-      s"-Dpidfile.path=/dev/null",
+      "-javaagent:/opt/aws-opentelemetry-agent/aws-opentelemetry-agent.jar",
+      "-Dotel.service.name=Gatehouse",
+      "-Dotel.exporter=otlp",
+      "-Dotel.traces.sampler=xray",
+//      "-Dotel.javaagent.debug=true",
+      "-Dpidfile.path=/dev/null",
       s"-J-Dlogs.home=/var/log/${packageName.value}",
     ),
     Test / javaOptions += "-Dlogback.configurationFile=logback-test.xml",
