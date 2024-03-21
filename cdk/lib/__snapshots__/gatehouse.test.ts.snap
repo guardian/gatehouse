@@ -5,6 +5,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
   "Metadata": {
     "gu:cdk:constructs": [
       "GuPolicy",
+      "GuPolicy",
       "GuStringParameter",
       "GuVpcParameter",
       "GuSubnetListParameter",
@@ -811,6 +812,33 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
         "ToPort": 9000,
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "XrayTelemetryPolicy20B2C572": {
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords",
+                "xray:GetSamplingRules",
+                "xray:GetSamplingTargets",
+                "xray:GetSamplingStatisticSummaries",
+              ],
+              "Effect": "Allow",
+              "Resource": "*",
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "PolicyName": "XrayTelemetryPolicy20B2C572",
+        "Roles": [
+          {
+            "Ref": "InstanceRoleGatehouse075DE24E",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Policy",
     },
     "identityTESTgatehouseBDA14DB7": {
       "DependsOn": [
