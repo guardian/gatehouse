@@ -1,6 +1,6 @@
 import {GuPlayApp} from '@guardian/cdk';
 import {AccessScope} from '@guardian/cdk/lib/constants/access';
-import type {GuStackProps} from '@guardian/cdk/lib/constructs/core';
+import {GuDistributionBucketParameter, GuStackProps} from '@guardian/cdk/lib/constructs/core';
 import {GuStack, GuStringParameter} from '@guardian/cdk/lib/constructs/core';
 import {GuCname} from '@guardian/cdk/lib/constructs/dns';
 import {GuPolicy, ReadParametersByName} from '@guardian/cdk/lib/constructs/iam';
@@ -23,6 +23,10 @@ export class Gatehouse extends GuStack {
         super(scope, id, props);
 
         const ec2App = 'gatehouse';
+
+        const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
+
+        const artifactPath = [distBucket, this.stack, this.stage, ec2App, `${ec2App}.deb`].join("/");
 
         const readAppSsmParamsPolicy = new GuPolicy(this, 'ReadAppSsmParamsPolicy', {
             statements: [new ReadParametersByName(this, {app: ec2App})]
@@ -52,12 +56,19 @@ export class Gatehouse extends GuStack {
             app: ec2App,
             instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
             access: {scope: AccessScope.PUBLIC},
-            userData: {
-                distributable: {
-                    fileName: `${ec2App}.deb`,
-                    executionStatement: `dpkg -i /${ec2App}/${ec2App}.deb`,
-                },
-            },
+            userData: [
+                '#!/bin/bash -ev',
+
+                '# Install X-Ray Collector',
+                'wget -P /tmp https://aws-otel-collector.s3.amazonaws.com/ubuntu/arm64/latest/aws-otel-collector.deb',
+                'dpkg -i /tmp/aws-otel-collector.deb',
+                'echo "loggingLevel=DEBUG" | sudo tee -a /opt/aws/aws-otel-collector/etc/extracfg.txt',
+                'sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a start',
+
+                '# Install app',
+                `aws --region ${props.env?.region} s3 cp s3://${artifactPath} /tmp/${ec2App}.deb`,
+                `dpkg -i /tmp/${ec2App}.deb`,
+            ].join('\n'),
             certificateProps: {
                 domainName: props.domainName,
             },
