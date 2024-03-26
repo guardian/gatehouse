@@ -65,6 +65,11 @@ export class Gatehouse extends GuStack {
                 'echo "loggingLevel=DEBUG" | sudo tee -a /opt/aws/aws-otel-collector/etc/extracfg.txt',
                 'sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a start',
 
+                '# Install X-Ray Agent',
+                'sudo mkdir /opt/aws-opentelemetry-agent',
+                'chmod +rx /opt/aws-opentelemetry-agent',
+                'wget -P /opt/aws-opentelemetry-agent https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar',
+
                 '# Install app',
                 `aws --region ${props.env?.region} s3 cp s3://${artifactPath} /tmp/${ec2App}.deb`,
                 `dpkg -i /tmp/${ec2App}.deb`,
