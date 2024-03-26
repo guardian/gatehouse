@@ -4,6 +4,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
 {
   "Metadata": {
     "gu:cdk:constructs": [
+      "GuDistributionBucketParameter",
       "GuPolicy",
       "GuPolicy",
       "GuStringParameter",
@@ -16,7 +17,6 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "GuDescribeEC2Policy",
       "GuLoggingStreamNameParameter",
       "GuLogShippingPolicy",
-      "GuDistributionBucketParameter",
       "GuGetDistributablePolicy",
       "GuParameterStoreReadPolicy",
       "GuAmiParameter",
@@ -935,14 +935,19 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
               "Fn::Join": [
                 "",
                 [
-                  "#!/bin/bash
-mkdir -p $(dirname '/gatehouse/gatehouse.deb')
-aws s3 cp 's3://",
+                  "#!/bin/bash -ev
+# Install X-Ray Collector
+wget -P /tmp https://aws-otel-collector.s3.amazonaws.com/ubuntu/arm64/latest/aws-otel-collector.deb
+dpkg -i /tmp/aws-otel-collector.deb
+echo "loggingLevel=DEBUG" | sudo tee -a /opt/aws/aws-otel-collector/etc/extracfg.txt
+sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a start
+# Install app
+aws --region undefined s3 cp s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
-                  "/identity/TEST/gatehouse/gatehouse.deb' '/gatehouse/gatehouse.deb'
-dpkg -i /gatehouse/gatehouse.deb",
+                  "/identity/TEST/gatehouse/gatehouse.deb /tmp/gatehouse.deb
+dpkg -i /tmp/gatehouse.deb",
                 ],
               ],
             },

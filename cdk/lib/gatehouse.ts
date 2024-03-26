@@ -1,7 +1,7 @@
 import {GuPlayApp} from '@guardian/cdk';
 import {AccessScope} from '@guardian/cdk/lib/constants/access';
-import {GuDistributionBucketParameter, GuStackProps} from '@guardian/cdk/lib/constructs/core';
-import {GuStack, GuStringParameter} from '@guardian/cdk/lib/constructs/core';
+import type {GuStackProps} from '@guardian/cdk/lib/constructs/core';
+import {GuDistributionBucketParameter, GuStack, GuStringParameter} from '@guardian/cdk/lib/constructs/core';
 import {GuCname} from '@guardian/cdk/lib/constructs/dns';
 import {GuPolicy, ReadParametersByName} from '@guardian/cdk/lib/constructs/iam';
 import type {App} from 'aws-cdk-lib';
