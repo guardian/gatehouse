@@ -26,7 +26,7 @@ export class Gatehouse extends GuStack {
 
         const distBucket = GuDistributionBucketParameter.getInstance(this).valueAsString;
 
-        const artifactPath = [distBucket, this.stack, this.stage, ec2App, `${ec2App}.deb`].join("/");
+        const artifactPath = [distBucket, this.stack, this.stage, ec2App, `${ec2App}.deb`].join('/');
 
         const readAppSsmParamsPolicy = new GuPolicy(this, 'ReadAppSsmParamsPolicy', {
             statements: [new ReadParametersByName(this, {app: ec2App})]
@@ -36,6 +36,12 @@ export class Gatehouse extends GuStack {
             statements: [new PolicyStatement({
                 effect: Effect.ALLOW,
                 actions: [
+                    'logs:PutLogEvents',
+                    'logs:CreateLogGroup',
+                    'logs:CreateLogStream',
+                    'logs:DescribeLogStreams',
+                    'logs:DescribeLogGroups',
+                    'logs:PutRetentionPolicy',
                     'xray:PutTraceSegments',
                     'xray:PutTelemetryRecords',
                     'xray:GetSamplingRules',
@@ -62,7 +68,7 @@ export class Gatehouse extends GuStack {
                 '# Install X-Ray Collector',
                 'wget -P /tmp https://aws-otel-collector.s3.amazonaws.com/ubuntu/arm64/latest/aws-otel-collector.deb',
                 'dpkg -i /tmp/aws-otel-collector.deb',
-                'cat << EOF > /etc/config.yaml',
+                'cat << EOF > /opt/aws/aws-otel-collector/etc/config.yaml',
                 'receivers:',
                 '  otlp:',
                 '    protocols:',
