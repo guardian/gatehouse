@@ -923,6 +923,24 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
 # Install X-Ray Collector
 wget -P /tmp https://aws-otel-collector.s3.amazonaws.com/ubuntu/arm64/latest/aws-otel-collector.deb
 dpkg -i /tmp/aws-otel-collector.deb
+cat << EOF > /etc/config.yaml
+receivers:
+  otlp:
+    protocols:
+      grpc:
+exporters:
+  awsxray:
+    indexed_attributes:
+      - otel.resource.service.environment
+extensions:
+  awsproxy:
+service:
+  extensions: [awsproxy]
+    pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [awsxray]
+EOF
 echo "loggingLevel=DEBUG" | sudo tee -a /opt/aws/aws-otel-collector/etc/extracfg.txt
 sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a start
 # Install X-Ray Agent
