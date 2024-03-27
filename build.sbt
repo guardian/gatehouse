@@ -4,42 +4,6 @@ lazy val root = (project in file("."))
     name := "gatehouse",
     version := "0.1.0-SNAPSHOT",
     maintainer := "Guardian Identity team",
-    packageSummary := "Gatehouse",
-    packageDescription := "Gatehouse.",
-//    Debian / linuxPackageMappings += {
-//      val file = sourceDirectory.value / ".." / "conf" / "debian.conf"
-//      packageMapping((file, "/etc/default/gatehouse")) withPerms "0644"
-//    },
-    // this is equal to
-    // linuxPackageMappings <<= linuxPackageMappings map { mappings => /* stuff */ mappings }
-//    linuxPackageMappings := {
-//      // first get the current mappings. mapping is of type Seq[LinuxPackageMapping]
-//      val mappings = linuxPackageMappings.value
-//
-//      // map over the mappings if you want to change them
-//      mappings map { mapping =>
-//
-//        // we remove everything besides files that end with ".conf"
-//        val filtered = mapping.mappings filter { case (file, name) =>
-//          name != "/etc/default/gatehouse" // only elements where this is true are kept
-//        }
-//        val f2 = filtered :+ {
-//          val file = baseDirectory.value / "conf" / "env.conf"
-//          (file, "/etc/default/gatehouse")
-//        }
-//
-//        // now we copy the mapping but replace the mappings
-//        mapping.copy(mappings = filtered)
-//
-//      } filter {
-//        // only keep those mappings that are nonEmpty (_.mappings.nonEmpty == true)
-//        _.mappings.nonEmpty
-//      }
-//    },
-//    linuxPackageMappings += {
-//      val file = baseDirectory.value / "conf" / "env.conf"
-//      packageMapping((file, "/etc/default/gatehouse")) withPerms "0644"
-//    },
     scalaVersion := "3.3.3",
     scalacOptions ++= Seq(
       "-explain",
@@ -49,8 +13,10 @@ lazy val root = (project in file("."))
     scalafmtOnCompile := true,
     Universal / javaOptions ++= Seq(
       "-javaagent:/opt/aws-opentelemetry-agent/aws-opentelemetry-agent.jar",
+      "-Dotel.service.name=Gatehouse",
+      "-Dotel.resource.attributes=service.environment=CODE",
       "-Dotel.exporter=otlp",
-      "-Dotel.resource.attributes=service.name=Gatehouse,service.namespace=CODE,environment=CODE",
+      "-Dotel.traces.sampler=xray",
       "-Dotel.javaagent.debug=true",
       "-Dpidfile.path=/dev/null",
       s"-J-Dlogs.home=/var/log/${packageName.value}",
