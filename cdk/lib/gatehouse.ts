@@ -9,7 +9,7 @@ import {Duration} from 'aws-cdk-lib';
 import {InstanceClass, InstanceSize, InstanceType, SecurityGroup} from 'aws-cdk-lib/aws-ec2';
 import {Effect, PolicyStatement} from 'aws-cdk-lib/aws-iam';
 import {ParameterDataType, ParameterTier, StringParameter} from 'aws-cdk-lib/aws-ssm';
-import * as xray from 'aws-cdk-lib/aws-xray';
+import { CfnGroup } from 'aws-cdk-lib/aws-xray';
 
 export interface GatehouseStackProps extends GuStackProps {
     domainName: string;
@@ -168,7 +168,7 @@ export class Gatehouse extends GuStack {
             resourceRecord: app.loadBalancer.loadBalancerDnsName,
         });
 
-        new xray.CfnGroup(this, 'CodeXrayGroup', {
+        new CfnGroup(this, 'CodeXrayGroup', {
             groupName: 'CODE',
             filterExpression: 'annotation.otel_resource_ec2_tag_Stage = "CODE"',
             insightsConfiguration: {insightsEnabled: true},
