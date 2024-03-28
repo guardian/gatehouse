@@ -934,17 +934,23 @@ receivers:
   otlp:
     protocols:
       grpc:
+processors:
+  memory_limiter:
+    limit_mib: 20
+  batch/traces:
+    timeout: 1s
+    send_batch_size: 50
 exporters:
   awsxray:
-    indexed_attributes:
-      - otel.resource.service.environment
+    indexed_attributes: [otel_resource_service_environment]
 extensions:
   awsproxy:
 service:
   extensions: [awsproxy]
-    pipelines:
+  pipelines:
     traces:
       receivers: [otlp]
+      processors: [memory_limiter, batch/traces]
       exporters: [awsxray]
 EOF
 echo "loggingLevel=DEBUG" | sudo tee -a /opt/aws/aws-otel-collector/etc/extracfg.txt
