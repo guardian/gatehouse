@@ -20,9 +20,9 @@ class UserController(
 )(implicit ex: ExecutionContext)
     extends BaseController {
 
-  def me(): Action[AnyContent] = authorisedAction(List(UserReadSelfSecure)).async(request =>
+  def me(): Action[AnyContent] = authorisedAction(List(UserReadSelfSecure)).async(request => {
     userService
-      .fetchUserByIdentityId(request.claims.identityId)
+      .fetchUserByOktaId(request.userInfo.oktaId)
       .map(_.map(user => Ok(toJson(user)(writes.me))).getOrElse(NotFound))
-  )
+  })
 }

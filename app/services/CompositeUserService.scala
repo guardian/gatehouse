@@ -13,9 +13,11 @@ class CompositeUserService(okta: OktaUserService, identityDb: LegacyIdentityDbUs
     _ <- identityDb.healthCheck()
   } yield ()
 
-  def fetchUserByIdentityId(identityId: String): Future[Option[User]] = for {
-    optLegacyUser <- identityDb.fetchUserByIdentityId(identityId)
-    optOktaUser <- optLegacyUser.flatMap(_.oktaId.map(okta.fetchUserByOktaId)).getOrElse(Future.successful(None))
+  override def fetchUserByOktaId(oktaId: String): Future[Option[User]] = for {
+    optOktaUser <- okta.fetchUserByOktaId(oktaId)
+    optLegacyUser <- optOktaUser
+      .map(oktaUser => identityDb.fetchUserByIdentityId(oktaUser.legacyIdentityId))
+      .getOrElse(Future.successful(None))
   } yield for {
     oktaUser <- optOktaUser
     legacyUser <- optLegacyUser
