@@ -199,6 +199,16 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "Type": "AWS::CertificateManager::Certificate",
       "UpdateReplacePolicy": "Retain",
     },
+    "CodeXrayGroup": {
+      "Properties": {
+        "FilterExpression": "annotation.otel_resource_ec2_tag_Stage = "CODE"",
+        "GroupName": "CODE",
+        "InsightsConfiguration": {
+          "InsightsEnabled": true,
+        },
+      },
+      "Type": "AWS::XRay::Group",
+    },
     "DescribeEC2PolicyFF5F9295": {
       "Properties": {
         "PolicyDocument": {
@@ -941,6 +951,8 @@ processors:
     ec2:
       tags:
         - Stage
+    timeout: 2s
+    override: false
   memory_limiter:
     check_interval: 1s
     limit_mib: 20
@@ -949,7 +961,8 @@ processors:
     send_batch_size: 50
 exporters:
   awsxray:
-    index_all_attributes:
+    indexed_attributes:
+      - otel_resource_ec2_tag_Stage
 extensions:
   awsproxy:
 service:
