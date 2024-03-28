@@ -199,16 +199,6 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "Type": "AWS::CertificateManager::Certificate",
       "UpdateReplacePolicy": "Retain",
     },
-    "CodeXrayGroup": {
-      "Properties": {
-        "FilterExpression": "annotation.otel_resource_ec2_tag_Stage = "CODE"",
-        "GroupName": "CODE",
-        "InsightsConfiguration": {
-          "InsightsEnabled": true,
-        },
-      },
-      "Type": "AWS::XRay::Group",
-    },
     "DescribeEC2PolicyFF5F9295": {
       "Properties": {
         "PolicyDocument": {
