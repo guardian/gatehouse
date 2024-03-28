@@ -61,10 +61,19 @@ class AuthorisedActionSpec extends PlaySpec {
     }
 
     "return 200 when the token is valid and has the required scopes" in {
+      val userInfo = OktaAuthenticatedUserInfo[DefaultIdentityClaims, DefaultAccessClaims](
+        localAccessTokenClaims = DefaultAccessClaims(
+          oktaId = "someOktaId",
+          primaryEmailAddress = "a@b.com",
+          identityId = "I43",
+          username = None
+        ),
+        serverSideUserInfo = None
+      )
       val authService = mock[OktaAuthService]
       when(authService.validateAccessToken(AccessToken("validToken"), requiredScopes))
         .thenReturn(
-          IO.pure(DefaultAccessClaims(primaryEmailAddress = "a@b.com", identityId = "I43", username = None))
+          IO.pure(userInfo)
         )
       val bodyParser = mock[BodyParser[AnyContent]]
       val action = new AuthorisedAction(authService, bodyParser, requiredScopes)
