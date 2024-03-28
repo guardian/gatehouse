@@ -9,7 +9,7 @@ import {Duration} from 'aws-cdk-lib';
 import {InstanceClass, InstanceSize, InstanceType, SecurityGroup} from 'aws-cdk-lib/aws-ec2';
 import {Effect, PolicyStatement} from 'aws-cdk-lib/aws-iam';
 import {ParameterDataType, ParameterTier, StringParameter} from 'aws-cdk-lib/aws-ssm';
-// import { CfnGroup } from 'aws-cdk-lib/aws-xray';
+import {CfnGroup} from 'aws-cdk-lib/aws-xray';
 
 export interface GatehouseStackProps extends GuStackProps {
     domainName: string;
@@ -95,6 +95,7 @@ export class Gatehouse extends GuStack {
                 '  awsxray:',
                 '    indexed_attributes:',
                 '      - otel.resource.ec2.tag.Stage',
+                '      - http.route',
                 'extensions:',
                 '  awsproxy:',
                 'service:',
@@ -167,11 +168,20 @@ export class Gatehouse extends GuStack {
             resourceRecord: app.loadBalancer.loadBalancerDnsName,
         });
 
-        // Riffraff can't do this yet
-        // new CfnGroup(this, 'CodeXrayGroup', {
-        //     groupName: 'CODE',
-        //     filterExpression: 'annotation.otel_resource_ec2_tag_Stage = "CODE"',
-        //     insightsConfiguration: {insightsEnabled: true},
-        // });
+        new CfnGroup(this, 'CodeXrayGroup', {
+            groupName: 'CODE',
+            filterExpression: 'annotation.otel_resource_ec2_tag_Stage = "CODE"',
+            insightsConfiguration: {insightsEnabled: true},
+        });
+        new CfnGroup(this, 'ProdXrayGroup', {
+            groupName: 'PROD',
+            filterExpression: 'annotation.otel_resource_ec2_tag_Stage = "PROD"',
+            insightsConfiguration: {insightsEnabled: true},
+        });
+
+        // TODO: sampling rules
+        // - include all bad requests
+        // - exclude healthcheck
+        // - limit to 1 a second
     }
 }
