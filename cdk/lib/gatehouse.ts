@@ -9,12 +9,12 @@ import {Duration} from 'aws-cdk-lib';
 import {InstanceClass, InstanceSize, InstanceType, SecurityGroup} from 'aws-cdk-lib/aws-ec2';
 import {Effect, PolicyStatement} from 'aws-cdk-lib/aws-iam';
 import {ParameterDataType, ParameterTier, StringParameter} from 'aws-cdk-lib/aws-ssm';
+import * as xray from 'aws-cdk-lib/aws-xray';
 
 export interface GatehouseStackProps extends GuStackProps {
     domainName: string;
 }
 
-// TODO: xray group filtered by 'annotation.otel_resource_service_environment = "CODE"' - possible to do by tag on ec2 instance
 export class Gatehouse extends GuStack {
     constructor(
         scope: App,
@@ -83,6 +83,8 @@ export class Gatehouse extends GuStack {
                 '    ec2:',
                 '      tags:',
                 '        - Stage',
+                '    timeout: 2s',
+                '    override: false',
                 '  memory_limiter:',
                 '    check_interval: 1s',
                 '    limit_mib: 20',
@@ -91,9 +93,9 @@ export class Gatehouse extends GuStack {
                 '    send_batch_size: 50',
                 'exporters:',
                 '  awsxray:',
-                '    index_all_attributes:',
-                // '    indexed_attributes:',
-                // '      - otel_resource_ec2_tag_Stage',
+                // '    index_all_attributes: true',
+                '    indexed_attributes:',
+                '      - otel_resource_ec2_tag_Stage',
                 'extensions:',
                 '  awsproxy:',
                 'service:',
@@ -164,6 +166,12 @@ export class Gatehouse extends GuStack {
             ttl: Duration.hours(1),
             domainName: props.domainName,
             resourceRecord: app.loadBalancer.loadBalancerDnsName,
+        });
+
+        new xray.CfnGroup(this, 'CodeXrayGroup', {
+            groupName: 'CODE',
+            filterExpression: 'annotation.otel_resource_ec2_tag_Stage = "CODE"',
+            insightsConfiguration: {insightsEnabled: true},
         });
     }
 }
