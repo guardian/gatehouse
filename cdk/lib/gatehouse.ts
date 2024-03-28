@@ -32,6 +32,7 @@ export class Gatehouse extends GuStack {
             statements: [new ReadParametersByName(this, {app: ec2App})]
         })
 
+        // See https://aws-otel.github.io/docs/setup/permissions
         const xrayTelemetryPolicy = new GuPolicy(this, 'XrayTelemetryPolicy', {
             statements: [new PolicyStatement({
                 effect: Effect.ALLOW,
@@ -65,6 +66,7 @@ export class Gatehouse extends GuStack {
             userData: [
                 '#!/bin/bash -ev',
 
+                // See https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/linux-rpm-demo.md
                 '# Install X-Ray Collector',
                 'wget -P /tmp https://aws-otel-collector.s3.amazonaws.com/ubuntu/arm64/latest/aws-otel-collector.deb',
                 'dpkg -i /tmp/aws-otel-collector.deb',
@@ -73,27 +75,29 @@ export class Gatehouse extends GuStack {
                 '  otlp:',
                 '    protocols:',
                 '      grpc:',
-                // 'processors:',
-                //   'batch/traces:',
-                //     'timeout: 1s',
-                //     'send_batch_size: 50',
+                'processors:',
+                '  memory_limiter:',
+                '    limit_mib: 20',
+                '  batch/traces:',
+                '    timeout: 1s',
+                '    send_batch_size: 50',
                 'exporters:',
                 '  awsxray:',
-                '    indexed_attributes:',
-                '      - otel.resource.service.environment',
+                '    indexed_attributes: [otel_resource_service_environment]',
                 'extensions:',
                 '  awsproxy:',
                 'service:',
                 '  extensions: [awsproxy]',
-                '    pipelines:',
+                '  pipelines:',
                 '    traces:',
                 '      receivers: [otlp]',
-                      // 'processors: [batch/traces]',
+                '      processors: [memory_limiter, batch/traces]',
                 '      exporters: [awsxray]',
                 'EOF',
                 'echo "loggingLevel=DEBUG" | sudo tee -a /opt/aws/aws-otel-collector/etc/extracfg.txt',
                 'sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a start',
 
+                // See https://aws-otel.github.io/docs/getting-started/java-sdk/auto-instr
                 '# Install X-Ray Agent',
                 'sudo mkdir /opt/aws-opentelemetry-agent',
                 'chmod +rx /opt/aws-opentelemetry-agent',
