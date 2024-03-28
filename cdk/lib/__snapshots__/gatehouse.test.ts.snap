@@ -952,7 +952,7 @@ processors:
 exporters:
   awsxray:
     indexed_attributes:
-      - otel_resource_ec2_tag_Stage
+      - otel.resource.ec2.tag.Stage
 extensions:
   awsproxy:
 service:
