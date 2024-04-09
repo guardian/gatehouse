@@ -14,7 +14,6 @@ lazy val root = (project in file("."))
     Universal / javaOptions ++= Seq(
       "-javaagent:/opt/aws-opentelemetry-agent/aws-opentelemetry-agent.jar",
       "-Dotel.service.name=Gatehouse",
-      "-Dotel.resource.attributes=service.environment=CODE",
       "-Dotel.exporter=otlp",
       "-Dotel.traces.sampler=xray",
       "-Dotel.javaagent.debug=true",

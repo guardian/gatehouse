@@ -199,15 +199,22 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "Type": "AWS::CertificateManager::Certificate",
       "UpdateReplacePolicy": "Retain",
     },
-    "CodeXrayGroup": {
+    "DefaultSamplingRule": {
       "Properties": {
-        "FilterExpression": "annotation.otel_resource_ec2_tag_Stage = "CODE"",
-        "GroupName": "CODE",
-        "InsightsConfiguration": {
-          "InsightsEnabled": true,
+        "SamplingRule": {
+          "FixedRate": 0,
+          "HTTPMethod": "*",
+          "Host": "*",
+          "Priority": 999,
+          "ReservoirSize": 1,
+          "ResourceARN": "*",
+          "RuleName": "default",
+          "ServiceName": "*",
+          "ServiceType": "*",
+          "URLPath": "*",
         },
       },
-      "Type": "AWS::XRay::Group",
+      "Type": "AWS::XRay::SamplingRule",
     },
     "DescribeEC2PolicyFF5F9295": {
       "Properties": {
@@ -382,6 +389,26 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "HealthcheckSamplingRule": {
+      "Properties": {
+        "SamplingRule": {
+          "Attributes": {
+            "http.route": "/healthcheck",
+          },
+          "FixedRate": 0,
+          "HTTPMethod": "*",
+          "Host": "*",
+          "Priority": 2,
+          "ReservoirSize": 0,
+          "ResourceARN": "*",
+          "RuleName": "health-checks",
+          "ServiceName": "*",
+          "ServiceType": "*",
+          "URLPath": "*",
+        },
+      },
+      "Type": "AWS::XRay::SamplingRule",
     },
     "InstanceRoleGatehouse075DE24E": {
       "Properties": {
@@ -658,16 +685,6 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
-    },
-    "ProdXrayGroup": {
-      "Properties": {
-        "FilterExpression": "annotation.otel_resource_ec2_tag_Stage = "PROD"",
-        "GroupName": "PROD",
-        "InsightsConfiguration": {
-          "InsightsEnabled": true,
-        },
-      },
-      "Type": "AWS::XRay::Group",
     },
     "ReadAppSsmParamsPolicy9DC17627": {
       "Properties": {

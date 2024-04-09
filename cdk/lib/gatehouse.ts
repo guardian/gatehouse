@@ -9,7 +9,8 @@ import {Duration} from 'aws-cdk-lib';
 import {InstanceClass, InstanceSize, InstanceType, SecurityGroup} from 'aws-cdk-lib/aws-ec2';
 import {Effect, PolicyStatement} from 'aws-cdk-lib/aws-iam';
 import {ParameterDataType, ParameterTier, StringParameter} from 'aws-cdk-lib/aws-ssm';
-import {CfnGroup} from 'aws-cdk-lib/aws-xray';
+// import {CfnGroup} from 'aws-cdk-lib/aws-xray';
+import {CfnSamplingRule} from 'aws-cdk-lib/aws-xray';
 
 export interface GatehouseStackProps extends GuStackProps {
     domainName: string;
@@ -168,20 +169,70 @@ export class Gatehouse extends GuStack {
             resourceRecord: app.loadBalancer.loadBalancerDnsName,
         });
 
-        new CfnGroup(this, 'CodeXrayGroup', {
-            groupName: 'CODE',
-            filterExpression: 'annotation.otel_resource_ec2_tag_Stage = "CODE"',
-            insightsConfiguration: {insightsEnabled: true},
-        });
-        new CfnGroup(this, 'ProdXrayGroup', {
-            groupName: 'PROD',
-            filterExpression: 'annotation.otel_resource_ec2_tag_Stage = "PROD"',
-            insightsConfiguration: {insightsEnabled: true},
+        // new CfnGroup(this, 'CodeXrayGroup', {
+        //     groupName: 'CODE',
+        //     filterExpression: 'annotation.otel_resource_ec2_tag_Stage = "CODE"',
+        //     insightsConfiguration: {insightsEnabled: true},
+        // });
+        // new CfnGroup(this, 'ProdXrayGroup', {
+        //     groupName: 'PROD',
+        //     filterExpression: 'annotation.otel_resource_ec2_tag_Stage = "PROD"',
+        //     insightsConfiguration: {insightsEnabled: true},
+        // });
+
+        // TODO: how to filter on range of values?
+        // Sample rule 1: Include all bad requests
+        // new CfnSamplingRule(this, 'BadRequestsSamplingRule', {
+        //     samplingRule: {
+        //         ruleName: 'bad-requests',
+        //         priority: 1,
+        //         reservoirSize: 1,
+        //         fixedRate: 1,
+        //         serviceName: '*',
+        //         serviceType: '*',
+        //         httpMethod: '*',
+        //         urlPath: '*',
+        //         resourceArn: '*',
+        //         host: '*',
+        //         attributes: {
+        //             'http.status_code': '*',
+        //         },
+        //     }
+        // });
+
+        // Sample rule 2: Exclude healthchecks
+        new CfnSamplingRule(this, 'HealthcheckSamplingRule', {
+            samplingRule: {
+                ruleName: 'health-checks',
+                priority: 2,
+                reservoirSize: 0,
+                fixedRate: 0,
+                serviceName: '*',
+                serviceType: '*',
+                httpMethod: '*',
+                urlPath: '*',
+                resourceArn: '*',
+                host: '*',
+                attributes: {
+                    'http.route': '/healthcheck',
+                },
+            }
         });
 
-        // TODO: sampling rules
-        // - include all bad requests
-        // - exclude healthcheck
-        // - limit to 1 a second
+        // Sample rule 3: Limit remaining requests to 1 a second
+        new CfnSamplingRule(this, 'DefaultSamplingRule', {
+            samplingRule: {
+                ruleName: 'default',
+                priority: 999,
+                reservoirSize: 1,
+                fixedRate: 0,
+                serviceName: '*',
+                serviceType: '*',
+                httpMethod: '*',
+                urlPath: '*',
+                resourceArn: '*',
+                host: '*',
+            }
+        });
     }
 }
