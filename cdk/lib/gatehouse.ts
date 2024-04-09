@@ -96,7 +96,6 @@ export class Gatehouse extends GuStack {
                 '  awsxray:',
                 '    indexed_attributes:',
                 '      - otel.resource.ec2.tag.Stage',
-                '      - http.route',
                 'extensions:',
                 '  awsproxy:',
                 'service:',
@@ -183,13 +182,13 @@ export class Gatehouse extends GuStack {
 
         // TODO: Janus to allow xray:CreateSamplingRule
         // TODO: how to filter on range of values?
-        // Sample rule 1: Include all bad requests
+        // Sample rule 1: Include all server failures
         // new CfnSamplingRule(this, 'BadRequestsSamplingRule', {
         //     samplingRule: {
-        //         ruleName: 'bad-requests',
+        //         ruleName: 'server-failures',
         //         priority: 1,
         //         reservoirSize: 1,
-        //         fixedRate: 1,
+        //         fixedRate: 100,
         //         serviceName: '*',
         //         serviceType: '*',
         //         httpMethod: '*',
@@ -197,37 +196,51 @@ export class Gatehouse extends GuStack {
         //         resourceArn: '*',
         //         host: '*',
         //         attributes: {
-        //             'http.status_code': '*',
+        //             'http.status': '5??',
         //         },
         //     }
         // });
 
-        // Sample rule 2: Exclude healthchecks
+        // Sample rule 2: Include all bad requests
+        // new CfnSamplingRule(this, 'BadRequestsSamplingRule', {
+        //     samplingRule: {
+        //         ruleName: 'bad-requests',
+        //         priority: 2,
+        //         reservoirSize: 1,
+        //         fixedRate: 100,
+        //         serviceName: '*',
+        //         serviceType: '*',
+        //         httpMethod: '*',
+        //         urlPath: '*',
+        //         resourceArn: '*',
+        //         host: '*',
+        //         attributes: {
+        //             'http.status': '4??',
+        //         },
+        //     }
+        // });
+
+        // Sample rule 3: Exclude healthchecks
         // new CfnSamplingRule(this, 'HealthCheckSamplingRule', {
         //     samplingRule: {
         //         version: 1,
         //         ruleName: 'health-checks',
-        //         priority: 2,
+        //         priority: 3,
         //         reservoirSize: 0,
         //         fixedRate: 0,
         //         serviceName: '*',
         //         serviceType: '*',
         //         httpMethod: '*',
-        //         urlPath: '*',
+        //         urlPath: '/healthcheck',
         //         resourceArn: '*',
         //         host: '*',
-        //         attributes: {
-        //             'http.route': '/healthcheck',
-        //         },
         //     }
         // });
 
-        // Sample rule 3: Limit remaining requests to 1 a second
+        // TODO: Update existing default rule instead
+        // Default sample rule: Limit remaining requests to 1 a second
     //     new CfnSamplingRule(this, 'DefaultSamplingRule', {
     //         samplingRule: {
-    //             version: 1,
-    //             ruleName: 'default',
-    //             priority: 999,
     //             reservoirSize: 1,
     //             fixedRate: 0,
     //             serviceName: '*',
