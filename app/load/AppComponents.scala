@@ -4,12 +4,12 @@ import auth.AuthorisedAction
 import com.gu.identity.auth.{OktaAudience, OktaAuthService, OktaIssuerUrl, OktaTokenValidationConfig}
 import com.okta.sdk.client.AuthorizationMode.PRIVATE_KEY
 import com.okta.sdk.client.Clients
-import com.okta.sdk.resource.api.UserApi
+import com.okta.sdk.resource.api.UserApi as OktaUserApi
 import controllers.{HealthCheckController, UserController}
 import logging.RequestLoggingFilter
 import play.api.ApplicationLoader.Context
 import play.api.BuiltInComponentsFromContext
-import play.api.db.slick.{DbName, SlickComponents}
+import play.api.db.slick.{DbName, SlickApi, SlickComponents}
 import play.api.libs.ws.ahc.AhcWSComponents
 import play.api.mvc.EssentialFilter
 import play.filters.HttpFiltersComponents
@@ -20,16 +20,14 @@ import slick.jdbc.JdbcProfile
 import scala.jdk.CollectionConverters.*
 
 class AppComponents(context: Context)
-    extends BuiltInComponentsFromContext(context)
+    extends BaseAppComponents(context)
     with HttpFiltersComponents
     with SlickComponents
     with AhcWSComponents {
 
-  override def httpFilters: Seq[EssentialFilter] = super.httpFilters :+ new RequestLoggingFilter(materializer)
+  override def slick: SlickApi = slickApi
 
-  private lazy val oktaOrgUrl = s"https://${configuration.get[String]("oktaApi.domain")}"
-
-  private lazy val oktaUserApi = {
+  override def oktaUserApi: OktaUserApi = {
     val apiClient = Clients
       .builder()
       .setOrgUrl(oktaOrgUrl)
@@ -38,8 +36,22 @@ class AppComponents(context: Context)
       .setPrivateKey(configuration.get[String]("oktaApi.privateKey"))
       .setScopes(configuration.get[Seq[String]]("oktaApi.scopes").toSet.asJava)
       .build()
-    new UserApi(apiClient)
+    new OktaUserApi(apiClient)
   }
+}
+
+abstract class BaseAppComponents(context: Context)
+    extends BuiltInComponentsFromContext(context)
+    with HttpFiltersComponents
+    with AhcWSComponents {
+
+  def slick: SlickApi
+
+  def oktaUserApi: OktaUserApi
+
+  override def httpFilters: Seq[EssentialFilter] = super.httpFilters :+ new RequestLoggingFilter(materializer)
+
+  protected lazy val oktaOrgUrl = s"https://${configuration.get[String]("oktaApi.domain")}"
 
   private lazy val authService = OktaAuthService(
     OktaTokenValidationConfig(
@@ -50,7 +62,7 @@ class AppComponents(context: Context)
   )
 
   private lazy val legacyIdentityDbUserService = new LegacyIdentityDbUserService(
-    slickApi.dbConfig[JdbcProfile](DbName("legacyIdentityDb"))
+    slick.dbConfig[JdbcProfile](DbName("legacyIdentityDb"))
   )
 
   private lazy val oktaUserService = new OktaUserService(oktaUserApi, oktaOrgUrl, wsClient)
@@ -59,7 +71,7 @@ class AppComponents(context: Context)
 
   private lazy val authorisedAction = new AuthorisedAction(authService, playBodyParsers.defaultBodyParser, _)
 
-  private lazy val healthCheckController = new HealthCheckController(controllerComponents, userService)
+  lazy val healthCheckController = new HealthCheckController(controllerComponents, userService)
 
   private lazy val userController = new UserController(controllerComponents, authorisedAction, userService)
 

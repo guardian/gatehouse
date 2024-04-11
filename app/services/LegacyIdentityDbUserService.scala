@@ -4,21 +4,30 @@ import model.Permission
 import play.api.Logging
 import play.api.libs.json.{JsArray, JsValue, Json, Reads}
 import slick.basic.DatabaseConfig
-import slick.jdbc.JdbcProfile
+import slick.dbio.DBIO
+import slick.jdbc.{JdbcProfile, PostgresProfile}
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Failure
 import scala.util.chaining.*
 
-class LegacyIdentityDbUserService(val dbConfig: DatabaseConfig[JdbcProfile])(implicit ctx: ExecutionContext)
+trait DbManager {
+
+  def dbConfig: DatabaseConfig[_]
+
+  def execute[T](dbio: DBIO[T]): Future[T] = dbConfig.db.run(dbio)
+
+  def p = dbConfig.profile
+}
+
+class LegacyIdentityDbUserService(dbManager: DbManager)(implicit ctx: ExecutionContext)
     extends Logging {
 
-  import dbConfig.profile.api.*
-
-  private val db = dbConfig.db
+  import dbManager.p..dbConfig.pro dbProfile.api._
 
   def healthCheck(): Future[Unit] =
-    db.run(sql"SELECT 1".as[Int])
+    dbManager
+      .execute(sql"SELECT 1".as[Int])
       .map(_ => ())
       .tap(_.onComplete {
         case Failure(exception) => logger.error(s"Health check failed: ${exception.getMessage}")
@@ -26,12 +35,14 @@ class LegacyIdentityDbUserService(val dbConfig: DatabaseConfig[JdbcProfile])(imp
       })
 
   def fetchUserByIdentityId(id: String): Future[Option[LegacyUser]] =
-    db.run(
-      sql"SELECT id, okta_id, braze_uuid, jdoc->'publicFields'->>'username', jdoc->'consents' FROM users WHERE id = $id LIMIT 1"
-        .as[(String, Option[String], Option[String], Option[String], String)]
-    ).map(_.map { case (identityId, oktaId, brazeId, userName, permissionsJsonStr) =>
-      LegacyUser(identityId, oktaId, brazeId, userName, toPermissions(permissionsJsonStr))
-    }.headOption)
+    dbManager
+      .execute(
+        sql"SELECT id, okta_id, braze_uuid, jdoc->'publicFields'->>'username', jdoc->'consents' FROM users WHERE id = $id LIMIT 1"
+          .as[(String, Option[String], Option[String], Option[String], String)]
+      )
+      .map(_.map { case (identityId, oktaId, brazeId, userName, permissionsJsonStr) =>
+        LegacyUser(identityId, oktaId, brazeId, userName, toPermissions(permissionsJsonStr))
+      }.headOption)
 
   private def toPermissions(jsonStr: String): Seq[Permission] = {
     def toPermission(json: JsValue) =
