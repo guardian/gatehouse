@@ -349,7 +349,11 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:kinesis:eu-west-1:",
+                    "arn:aws:kinesis:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
                     {
                       "Ref": "AWS::AccountId",
                     },
@@ -609,7 +613,11 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ssm:eu-west-1:",
+                    "arn:aws:ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
                     {
                       "Ref": "AWS::AccountId",
                     },
@@ -628,7 +636,11 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ssm:eu-west-1:",
+                    "arn:aws:ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
                     {
                       "Ref": "AWS::AccountId",
                     },
@@ -663,7 +675,11 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
                 "Fn::Join": [
                   "",
                   [
-                    "arn:aws:ssm:eu-west-1:",
+                    "arn:aws:ssm:",
+                    {
+                      "Ref": "AWS::Region",
+                    },
+                    ":",
                     {
                       "Ref": "AWS::AccountId",
                     },
@@ -930,11 +946,15 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
 wget -P /tmp https://aws-otel-collector.s3.amazonaws.com/ubuntu/arm64/latest/aws-otel-collector.deb
 dpkg -i /tmp/aws-otel-collector.deb
 cat << EOF > /opt/aws/aws-otel-collector/etc/config.yaml
+# Prepares collector to receive OTLP traces
+# See https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver/otlpreceiver#otlp-receiver
 receivers:
   otlp:
     protocols:
       grpc:
 processors:
+  # Collects EC2 metadata.  In particular, we need the Stage tag to distinguish between prod and non-prod environments
+  # See https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/resourcedetectionprocessor#resource-detection-processor
   resourcedetection/ec2:
     detectors:
       - ec2
@@ -943,18 +963,27 @@ processors:
         - Stage
     timeout: 2s
     override: false
+  # Keeps the collector from using more than 20 MiB of memory
+  # See https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/memorylimiterprocessor#memory-limiter-processor
   memory_limiter:
     check_interval: 1s
     limit_mib: 20
+  # Sends batches of up to 50 traces every second
+  # https://github.com/open-telemetry/opentelemetry-collector/tree/main/processor/batchprocessor#batch-processor
   batch/traces:
     timeout: 1s
     send_batch_size: 50
+# Exports traces to AWS X-Ray, allowing Stage to be indexed for filtering
+# https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/exporter/awsxrayexporter
 exporters:
   awsxray:
     indexed_attributes:
       - otel.resource.ec2.tag.Stage
+# Allows access to AWS APIs
+# https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/awsproxy
 extensions:
   awsproxy:
+# Wires all the resources defined above together
 service:
   extensions:
     - awsproxy
@@ -975,7 +1004,7 @@ sudo mkdir /opt/aws-opentelemetry-agent
 chmod +rx /opt/aws-opentelemetry-agent
 wget -P /opt/aws-opentelemetry-agent https://github.com/aws-observability/aws-otel-java-instrumentation/releases/latest/download/aws-opentelemetry-agent.jar
 # Install app
-aws --region eu-west-1 s3 cp s3://",
+aws --region undefined s3 cp s3://",
                   {
                     "Ref": "DistributionBucketName",
                   },
