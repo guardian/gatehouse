@@ -17,7 +17,7 @@
     "@guardian/prettier": "5.0.0",
     "@guardian/tsconfig": "^0.2.0",
     "@types/jest": "^29.5.11",
-    "@types/node": "20.10.5",
+    "@types/node": "20.12.7",
     "aws-cdk": "2.114.1",
     "aws-cdk-lib": "2.114.1",
     "constructs": "10.3.0",
