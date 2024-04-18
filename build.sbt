@@ -16,7 +16,7 @@ lazy val root = (project in file("."))
       "-Dotel.service.name=Gatehouse",
       "-Dotel.exporter=otlp",
       "-Dotel.traces.sampler=xray",
-//      "-Dotel.javaagent.debug=true",
+      "-Dotel.javaagent.debug=true",
       "-Dpidfile.path=/dev/null",
       s"-J-Dlogs.home=/var/log/${packageName.value}",
     ),
