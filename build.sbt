@@ -13,12 +13,9 @@ lazy val root = (project in file("."))
     scalafmtOnCompile := true,
     Universal / javaOptions ++= Seq(
       "-javaagent:/opt/aws-opentelemetry-agent/aws-opentelemetry-agent.jar",
-      "-Dotel.service.name=Gatehouse",
-      "-Dotel.exporter=otlp",
-      "-Dotel.traces.sampler=xray",
-      "-Dotel.javaagent.debug=true",
+      s"-Dotel.javaagent.configuration-file=${baseDirectory.value}/conf/telemetry.conf",
       "-Dpidfile.path=/dev/null",
-      s"-J-Dlogs.home=/var/log/${packageName.value}",
+      s"-Dlogs.home=/var/log/${packageName.value}",
     ),
     Test / javaOptions += "-Dlogback.configurationFile=logback-test.xml",
     libraryDependencies ++= Seq(
