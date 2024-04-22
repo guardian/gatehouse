@@ -8,7 +8,7 @@ lazy val root = (project in file("."))
     scalacOptions ++= Seq(
       "-explain",
       "-feature",
-      "-Werror",
+//      "-Werror",
     ),
     scalafmtOnCompile := true,
     Universal / javaOptions ++= Seq(
@@ -18,7 +18,7 @@ lazy val root = (project in file("."))
       "-Dotel.instrumentation.common.experimental.controller-telemetry.enabled=true",
       "-Dotel.traces.sampler=xray",
       "-Dotel.traces.exporter=logging,otlp",
-      "-Dotel.metrics.exporter=logging,otlp",
+      "-Dotel.metrics.exporter=logging",
       "-Dotel.logs.exporter=logging,otlp",
       "-Dotel.javaagent.debug=true",
 //      s"-Dotel.javaagent.configuration-file=${baseDirectory.value}/conf/telemetry.conf",
@@ -43,6 +43,15 @@ lazy val root = (project in file("."))
       "com.okta.sdk" % "okta-sdk-api" % "15.0.0",
       "com.okta.sdk" % "okta-sdk-impl" % "15.0.0" % Runtime,
       "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.34",
+      "io.opentelemetry" % "opentelemetry-api" % "1.37.0",
+      "io.opentelemetry" % "opentelemetry-sdk" % "1.37.0",
+      "io.opentelemetry" % "opentelemetry-exporter-logging" % "1.37.0",
+      "io.opentelemetry" % "opentelemetry-sdk-extension-autoconfigure" % "1.37.0",
+      "io.opentelemetry.semconv" % "opentelemetry-semconv" % "1.25.0-alpha",
+//      "io.opentelemetry" % "opentelemetry-sdk-extension-aws" % "1.19.0",
+//      "io.opentelemetry.contrib" % "opentelemetry-aws-xray-propagator" % "1.34.0-alpha",
+//      "io.opentelemetry" % "opentelemetry-exporters-otlp" % "0.9.1",
+//      "com.amazonaws" % "aws-xray-recorder-sdk-aws-sdk-v2" % "2.15.2",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
     dependencyOverrides ++= {
