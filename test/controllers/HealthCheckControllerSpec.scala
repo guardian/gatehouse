@@ -15,7 +15,12 @@ import scala.concurrent.Future
 
 class HealthCheckControllerSpec extends PlaySpec with OneAppPerTestWithComponents with MockitoSugar {
 
-  override def components: BuiltInComponents = new AppComponents(context)
+  override def components: BuiltInComponents = {
+    sys.Prop.StringProp("otel.traces.exporter").set("none")
+    sys.Prop.StringProp("otel.metrics.exporter").set("none")
+    sys.Prop.StringProp("otel.logs.exporter").set("none")
+    new AppComponents(context)
+  }
 
   "GET healthcheck" should {
 

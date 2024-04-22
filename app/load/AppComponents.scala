@@ -5,7 +5,8 @@ import com.gu.identity.auth.{OktaAudience, OktaAuthService, OktaIssuerUrl, OktaT
 import com.okta.sdk.client.AuthorizationMode.PRIVATE_KEY
 import com.okta.sdk.client.Clients
 import com.okta.sdk.resource.api.UserApi
-import controllers.{HealthCheckController, UserController}
+import controllers.{HealthCheckController, TelemetryFilter, UserController}
+import io.opentelemetry.sdk.autoconfigure.AutoConfiguredOpenTelemetrySdk
 import logging.RequestLoggingFilter
 import play.api.ApplicationLoader.Context
 import play.api.BuiltInComponentsFromContext
@@ -25,7 +26,53 @@ class AppComponents(context: Context)
     with SlickComponents
     with AhcWSComponents {
 
-  override def httpFilters: Seq[EssentialFilter] = super.httpFilters :+ new RequestLoggingFilter(materializer)
+  private val openTelemetry = AutoConfiguredOpenTelemetrySdk.initialize().getOpenTelemetrySdk
+
+//  val openTelemetry: OpenTelemetry = {
+//    val resource: Resource = Resource
+//      .getDefault()
+//      .toBuilder()
+//      .put(ResourceAttributes.SERVICE_NAME, "Gatehouse")
+//      .put(ResourceAttributes.SERVICE_VERSION, "0.1.0")
+//      .build()
+//
+//    val sdkTracerProvider: SdkTracerProvider = SdkTracerProvider
+//      .builder()
+//      .addSpanProcessor(SimpleSpanProcessor.create(LoggingSpanExporter.create()))
+//      .setResource(resource)
+//      .build()
+//
+//    val sdkMeterProvider: SdkMeterProvider = SdkMeterProvider
+//      .builder()
+//      .registerMetricReader(PeriodicMetricReader.builder(LoggingMetricExporter.create()).build())
+//      .setResource(resource)
+//      .build()
+//
+//    val sdkLoggerProvider: SdkLoggerProvider = SdkLoggerProvider
+//      .builder()
+//      .addLogRecordProcessor(BatchLogRecordProcessor.builder(SystemOutLogRecordExporter.create()).build())
+//      .setResource(resource)
+//      .build();
+//
+//    val openTel: OpenTelemetry = OpenTelemetrySdk
+//      .builder()
+//      .setTracerProvider(sdkTracerProvider)
+//      .setMeterProvider(sdkMeterProvider)
+//      .setLoggerProvider(sdkLoggerProvider)
+//      .setPropagators(
+//        ContextPropagators.create(
+//          TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance())
+//        )
+//      )
+//      .buildAndRegisterGlobal();
+//
+//    openTel
+//  }
+
+  override def httpFilters: Seq[EssentialFilter] = super.httpFilters :++ Seq(
+    new RequestLoggingFilter(materializer),
+    new TelemetryFilter(openTelemetry.getTracerProvider)
+  )
 
   private lazy val oktaOrgUrl = s"https://${configuration.get[String]("oktaApi.domain")}"
 
