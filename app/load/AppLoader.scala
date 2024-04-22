@@ -42,9 +42,9 @@ class AppLoader extends ApplicationLoader {
 
     def configureTelemetry() = {
       sys.Prop.StringProp("otel.service.name").set("Gatehouse")
-      sys.Prop.StringProp("otel.traces.exporter").set("logging")
-      sys.Prop.StringProp("otel.metrics.exporter").set("logging")
-      sys.Prop.StringProp("otel.logs.exporter").set("logging")
+      sys.Prop.StringProp("otel.traces.exporter").set("logging,otlp")
+      sys.Prop.StringProp("otel.metrics.exporter").set("none")
+      sys.Prop.StringProp("otel.logs.exporter").set("none")
       sys.Prop.IntProp("otel.metric.export.interval").set("15000")
     }
 
