@@ -17,9 +17,10 @@ import scala.util.{Failure, Success, Try}
 class AppLoader extends ApplicationLoader {
 
   private val appName = "gatehouse"
+  private val awsProfileName = "identity"
 
   private def buildConfig(context: Context): Try[Config] = {
-    val credentialsProvider = DefaultCredentialsProvider.create()
+    val credentialsProvider = DefaultCredentialsProvider.builder.profileName(awsProfileName).build()
     val isDev = context.environment.mode == Mode.Dev
 
     def configFor(appIdentity: AppIdentity) = {
@@ -40,7 +41,7 @@ class AppLoader extends ApplicationLoader {
     }
 
     if (isDev)
-      Try(configFor(AwsIdentity(app = appName, stack = "identity", stage = "DEV", region = "eu-west-1")))
+      Try(configFor(AwsIdentity(app = appName, stack = awsProfileName, stage = "DEV", region = "eu-west-1")))
     else
       for {
         identity <- AppIdentity.whoAmI(defaultAppName = appName, credentialsProvider)
