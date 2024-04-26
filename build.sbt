@@ -43,16 +43,17 @@ lazy val root = (project in file("."))
       "com.okta.sdk" % "okta-sdk-api" % "15.0.0",
       "com.okta.sdk" % "okta-sdk-impl" % "15.0.0" % Runtime,
       "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.34",
+
       "io.opentelemetry" % "opentelemetry-api" % "1.37.0",
       "io.opentelemetry" % "opentelemetry-sdk" % "1.37.0",
-      "io.opentelemetry" % "opentelemetry-exporter-logging" % "1.37.0",
       "io.opentelemetry" % "opentelemetry-exporter-otlp" % "1.37.0",
-      "io.opentelemetry" % "opentelemetry-sdk-extension-autoconfigure" % "1.37.0",
       "io.opentelemetry.semconv" % "opentelemetry-semconv" % "1.25.0-alpha",
-//      "io.opentelemetry" % "opentelemetry-sdk-extension-aws" % "1.19.0",
-//      "io.opentelemetry.contrib" % "opentelemetry-aws-xray-propagator" % "1.34.0-alpha",
-//      "io.opentelemetry" % "opentelemetry-exporters-otlp" % "0.9.1",
-//      "com.amazonaws" % "aws-xray-recorder-sdk-aws-sdk-v2" % "2.15.2",
+      "io.opentelemetry" % "opentelemetry-extension-aws" % "1.20.1" % Runtime,
+      "io.opentelemetry" % "opentelemetry-sdk-extension-aws" % "1.19.0" % Runtime,
+      "io.opentelemetry.contrib" % "opentelemetry-aws-xray" % "1.35.0",
+      "io.opentelemetry.contrib" % "opentelemetry-aws-xray-propagator" % "1.35.0-alpha",
+      "io.opentelemetry.contrib" % "opentelemetry-aws-resources" % "1.35.0-alpha",
+
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
     dependencyOverrides ++= {
