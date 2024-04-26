@@ -43,7 +43,6 @@ lazy val root = (project in file("."))
       "com.okta.sdk" % "okta-sdk-api" % "15.0.0",
       "com.okta.sdk" % "okta-sdk-impl" % "15.0.0" % Runtime,
       "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.34",
-
       "io.opentelemetry" % "opentelemetry-api" % "1.37.0",
       "io.opentelemetry" % "opentelemetry-sdk" % "1.37.0",
       "io.opentelemetry" % "opentelemetry-exporter-otlp" % "1.37.0",
@@ -53,7 +52,6 @@ lazy val root = (project in file("."))
       "io.opentelemetry.contrib" % "opentelemetry-aws-xray" % "1.35.0",
       "io.opentelemetry.contrib" % "opentelemetry-aws-xray-propagator" % "1.35.0-alpha",
       "io.opentelemetry.contrib" % "opentelemetry-aws-resources" % "1.35.0-alpha",
-
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
     dependencyOverrides ++= {
