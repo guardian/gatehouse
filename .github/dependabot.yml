@@ -8,3 +8,8 @@ updates:
     directory: /cdk
     schedule:
       interval: weekly
+    groups:
+      all:
+        patterns: 
+          - '*'
+          
