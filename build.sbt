@@ -21,6 +21,7 @@ lazy val root = (project in file("."))
       s"-J-Dlogs.home=/var/log/${packageName.value}",
     ),
     Test / javaOptions += "-Dlogback.configurationFile=logback-test.xml",
+    ThisBuild / resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
     libraryDependencies ++= Seq(
       ws,
       "org.playframework" %% "play-slick" % "6.1.0",
@@ -28,7 +29,7 @@ lazy val root = (project in file("."))
       ("com.gu" %% "simple-configuration-ssm" % "2.0.0").cross(CrossVersion.for3Use2_13),
       /* Using Scala 2.13 version of identity-auth-play until a Scala 3 version has been released:
        * https://trello.com/c/5kOc41kD/4669-release-scala-3-version-of-identity-libraries */
-      ("com.gu.identity" %% "identity-auth-core" % "4.25")
+      ("com.gu.identity" %% "identity-auth-core" % "2024-07-31-14-03-SNAPSHOT")
         .cross(CrossVersion.for3Use2_13)
         exclude ("org.scala-lang.modules", "scala-xml_2.13")
         exclude ("org.scala-lang.modules", "scala-parser-combinators_2.13")
