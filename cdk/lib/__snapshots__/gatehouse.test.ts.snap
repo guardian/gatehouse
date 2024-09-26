@@ -113,7 +113,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           },
         },
         "MaxSize": "2",
-        "MinSize": "1",
+        "MinSize": "0",
         "Tags": [
           {
             "Key": "App",
