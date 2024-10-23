@@ -141,7 +141,7 @@ export class Gatehouse extends GuStack {
             },
             monitoringConfiguration: {noMonitoring: true},
             scaling: {
-                minimumInstances: 1,
+                minimumInstances: 0,
                 maximumInstances: 2,
             },
             applicationLogging: {
