@@ -22,6 +22,8 @@
         <appender-ref ref="STDOUT"/>
     </appender>
 
+    <logger name="io.opentelemetry" level="DEBUG"/>
+
     <root level="INFO">
         <appender-ref ref="ASYNCFILE"/>
         <appender-ref ref="ASYNCSTDOUT"/>

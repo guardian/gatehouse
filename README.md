@@ -78,3 +78,7 @@ file.
 TODO: Instructions on how to generate an Okta access token locally.     
 We use the Okta Code org locally because this makes it easier to develop and test with users that have already been
 registered in [Code gateway](https://profile.code.dev-theguardian.com/).
+
+### Docs
+
+See the [docs](docs/) for more information on how to work with the app.

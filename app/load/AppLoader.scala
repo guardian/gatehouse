@@ -36,11 +36,20 @@ class AppLoader extends ApplicationLoader {
 
     // To validate the SSL certificate of the RDS instance - remove this and the associated params when we no longer use RDS
     def configureTrustStore(config: Config) = {
-      System.setProperty("javax.net.ssl.trustStore", config.getString("trustStore.path"))
-      System.setProperty("javax.net.ssl.trustStorePassword", config.getString("trustStore.password"))
+      sys.Prop.StringProp("javax.net.ssl.trustStore").set(config.getString("trustStore.path"))
+      sys.Prop.StringProp("javax.net.ssl.trustStorePassword").set(config.getString("trustStore.password"))
+    }
+
+    def configureTelemetry() = {
+      sys.Prop.StringProp("otel.service.name").set("Gatehouse")
+      sys.Prop.StringProp("otel.traces.exporter").set("logging,otlp")
+      sys.Prop.StringProp("otel.metrics.exporter").set("none")
+      sys.Prop.StringProp("otel.logs.exporter").set("none")
+      sys.Prop.IntProp("otel.metric.export.interval").set("15000")
     }
 
     if (isDev)
+      configureTelemetry()
       Try(configFor(AwsIdentity(app = appName, stack = awsProfileName, stage = "DEV", region = "eu-west-1")))
     else
       for {
