@@ -28,12 +28,8 @@ jobs:
           cache: yarn
           cache-dependency-path: cdk/yarn.lock
 
-      # Java is needed for the Scala Play app
-      - uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: corretto
-          cache: sbt
+      # SBT is needed for the Scala Play app
+      - uses: guardian/setup-scala@v1
 
       # Build CDK and Play (in sequence)
       - run: scripts/ci
