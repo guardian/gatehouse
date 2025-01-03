@@ -1,16 +1,16 @@
-import {App} from 'aws-cdk-lib';
-import {Template} from 'aws-cdk-lib/assertions';
-import {Gatehouse} from './gatehouse';
+import { App } from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import { Gatehouse } from './gatehouse';
 
 describe('The Gatehouse stack', () => {
-    it('matches the snapshot', () => {
-        const app = new App();
-        const stack = new Gatehouse(app, 'gatehouse-TEST', {
-            stack: 'identity',
-            stage: 'TEST',
-            domainName: 'id.test.dev-guardianapis.com',
-        });
-        const template = Template.fromStack(stack);
-        expect(template.toJSON()).toMatchSnapshot();
-    });
+	it('matches the snapshot', () => {
+		const app = new App();
+		const stack = new Gatehouse(app, 'gatehouse-TEST', {
+			stack: 'identity',
+			stage: 'TEST',
+			domainName: 'id.test.dev-guardianapis.com',
+		});
+		const template = Template.fromStack(stack);
+		expect(template.toJSON()).toMatchSnapshot();
+	});
 });

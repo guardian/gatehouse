@@ -8,6 +8,7 @@ set -e
   cd cdk
   yarn install --frozen-lockfile
   yarn lint
+  yarn format:check
   yarn test
   yarn synth
 )
