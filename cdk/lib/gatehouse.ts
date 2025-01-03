@@ -6,7 +6,7 @@ import {GuCname} from '@guardian/cdk/lib/constructs/dns';
 import {GuPolicy, ReadParametersByName} from '@guardian/cdk/lib/constructs/iam';
 import type {App} from 'aws-cdk-lib';
 import {Duration} from 'aws-cdk-lib';
-import {InstanceClass, InstanceSize, InstanceType, SecurityGroup} from 'aws-cdk-lib/aws-ec2';
+import {InstanceClass, InstanceSize, InstanceType, SecurityGroup, UserData} from 'aws-cdk-lib/aws-ec2';
 import {Effect, PolicyStatement} from 'aws-cdk-lib/aws-iam';
 import {ParameterDataType, ParameterTier, StringParameter} from 'aws-cdk-lib/aws-ssm';
 
@@ -63,7 +63,8 @@ export class Gatehouse extends GuStack {
             app: ec2App,
             instanceType: InstanceType.of(InstanceClass.T4G, InstanceSize.MICRO),
             access: {scope: AccessScope.PUBLIC},
-            userData: [
+            userData: UserData.custom(
+                [
                 '#!/bin/bash -ev',
 
                 // See https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/linux-rpm-demo.md
@@ -135,7 +136,7 @@ export class Gatehouse extends GuStack {
                 '# Install app',
                 `aws --region ${props.env?.region} s3 cp s3://${artifactPath} /tmp/${ec2App}.deb`,
                 `dpkg -i /tmp/${ec2App}.deb`,
-            ].join('\n'),
+            ].join('\n')),
             certificateProps: {
                 domainName: props.domainName,
             },
