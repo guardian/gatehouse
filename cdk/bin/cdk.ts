@@ -15,6 +15,10 @@ new Gatehouse(app, 'gatehouse-CODE', {
 	env,
 	stage: 'CODE',
 	domainName: 'gatehouse-origin.code.dev-guardianapis.com',
+	database: {
+		minCapacity: 0,
+		maxCapacity: 1,
+	},
 });
 
 new Gatehouse(app, 'gatehouse-PROD', {
@@ -22,4 +26,8 @@ new Gatehouse(app, 'gatehouse-PROD', {
 	env,
 	stage: 'PROD',
 	domainName: 'gatehouse-origin.guardianapis.com',
+	database: {
+		minCapacity: 0,
+		maxCapacity: 1,
+	},
 });

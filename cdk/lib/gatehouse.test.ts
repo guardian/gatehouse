@@ -9,6 +9,10 @@ describe('The Gatehouse stack', () => {
 			stack: 'identity',
 			stage: 'TEST',
 			domainName: 'id.test.dev-guardianapis.com',
+			database: {
+				minCapacity: 0,
+				maxCapacity: 1,
+			},
 		});
 		const template = Template.fromStack(stack);
 		expect(template.toJSON()).toMatchSnapshot();
