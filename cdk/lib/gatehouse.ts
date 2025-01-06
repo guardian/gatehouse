@@ -266,7 +266,7 @@ export class Gatehouse extends GuStack {
 
 		const cluster = new DatabaseCluster(this, 'GatehouseDb', {
 			engine: DatabaseClusterEngine.auroraPostgres({
-				version: AuroraPostgresEngineVersion.VER_15_10,
+				version: AuroraPostgresEngineVersion.VER_16_6,
 			}),
 			writer: ClusterInstance.serverlessV2('writer'),
 			readers: [

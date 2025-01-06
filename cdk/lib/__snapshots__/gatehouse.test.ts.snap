@@ -289,7 +289,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
         "EnableHttpEndpoint": true,
         "EnableIAMDatabaseAuthentication": true,
         "Engine": "aurora-postgresql",
-        "EngineVersion": "15.10",
+        "EngineVersion": "16.6",
         "ManageMasterUserPassword": true,
         "MasterUsername": "postgres",
         "MonitoringInterval": 60,
@@ -396,8 +396,8 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
     },
     "GatehouseDbParameterGroupAD12D077": {
       "Properties": {
-        "Description": "Cluster parameter group for aurora-postgresql15",
-        "Family": "aurora-postgresql15",
+        "Description": "Cluster parameter group for aurora-postgresql16",
+        "Family": "aurora-postgresql16",
         "Parameters": {
           "rds.force_ssl": "1",
         },
