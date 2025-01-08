@@ -28,6 +28,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "GuApplicationTargetGroup",
       "GuHttpsApplicationListener",
       "GuCname",
+      "GuSubnetListParameter",
     ],
     "gu:cdk:version": "TEST",
   },
@@ -56,6 +57,11 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "Default": "/account/services/logging.stream.name",
       "Description": "SSM parameter containing the Name (not ARN) on the kinesis stream",
       "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+    "PrivateSubnets": {
+      "Default": "/account/vpc/primary/subnets/private",
+      "Description": "A list of private subnets",
+      "Type": "AWS::SSM::Parameter::Value<List<AWS::EC2::Subnet::Id>>",
     },
     "VpcId": {
       "Default": "/account/vpc/primary/id",
@@ -205,6 +211,25 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "Type": "AWS::CertificateManager::Certificate",
       "UpdateReplacePolicy": "Retain",
     },
+    "ClientSecurityGroupOutputParameter16694915": {
+      "Properties": {
+        "Name": "/TEST/identity/gatehouse/db-clients-security-group",
+        "Tags": {
+          "Stack": "identity",
+          "Stage": "TEST",
+          "gu:cdk:version": "TEST",
+          "gu:repo": "guardian/gatehouse",
+        },
+        "Type": "String",
+        "Value": {
+          "Fn::GetAtt": [
+            "RDSSecurityGroupClientsE0F4CB29",
+            "GroupId",
+          ],
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
     "DescribeEC2PolicyFF5F9295": {
       "Properties": {
         "PolicyDocument": {
@@ -247,6 +272,288 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
         "TTL": 3600,
       },
       "Type": "Guardian::DNS::RecordSet",
+    },
+    "GatehouseDbFE0B3FEE": {
+      "DeletionPolicy": "Snapshot",
+      "Properties": {
+        "AutoMinorVersionUpgrade": false,
+        "CopyTagsToSnapshot": true,
+        "DBClusterParameterGroupName": {
+          "Ref": "GatehouseDbParameterGroupAD12D077",
+        },
+        "DBSubnetGroupName": {
+          "Ref": "GatehouseDbSubnetsD1F185BF",
+        },
+        "DatabaseName": "gatehouse",
+        "DeletionProtection": true,
+        "EnableHttpEndpoint": true,
+        "EnableIAMDatabaseAuthentication": true,
+        "Engine": "aurora-postgresql",
+        "EngineVersion": "16.6",
+        "ManageMasterUserPassword": true,
+        "MasterUsername": "postgres",
+        "MonitoringInterval": 60,
+        "MonitoringRoleArn": {
+          "Fn::GetAtt": [
+            "GatehouseDbMonitoringRole2A95BC4D",
+            "Arn",
+          ],
+        },
+        "PerformanceInsightsEnabled": true,
+        "PerformanceInsightsRetentionPeriod": 7,
+        "Port": 5432,
+        "ServerlessV2ScalingConfiguration": {
+          "MaxCapacity": 1,
+          "MinCapacity": 0,
+        },
+        "StorageEncrypted": true,
+        "Tags": [
+          {
+            "Key": "devx-backup-enabled",
+            "Value": "true",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+        "VpcSecurityGroupIds": [
+          {
+            "Fn::GetAtt": [
+              "RDSSecurityGroupRules40FD365B",
+              "GroupId",
+            ],
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBCluster",
+      "UpdateReplacePolicy": "Snapshot",
+    },
+    "GatehouseDbMonitoringRole2A95BC4D": {
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "monitoring.rds.amazonaws.com",
+              },
+            },
+          ],
+          "Version": "2012-10-17",
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition",
+                },
+                ":iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole",
+              ],
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "devx-backup-enabled",
+            "Value": "true",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+      },
+      "Type": "AWS::IAM::Role",
+    },
+    "GatehouseDbParameterGroupAD12D077": {
+      "Properties": {
+        "Description": "Cluster parameter group for aurora-postgresql16",
+        "Family": "aurora-postgresql16",
+        "Parameters": {
+          "rds.force_ssl": "1",
+        },
+        "Tags": [
+          {
+            "Key": "devx-backup-enabled",
+            "Value": "true",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBClusterParameterGroup",
+    },
+    "GatehouseDbSubnetsD1F185BF": {
+      "Properties": {
+        "DBSubnetGroupDescription": "Subnets for GatehouseDb database",
+        "SubnetIds": [
+          {
+            "Fn::Select": [
+              0,
+              {
+                "Ref": "PrivateSubnets",
+              },
+            ],
+          },
+          {
+            "Fn::Select": [
+              1,
+              {
+                "Ref": "PrivateSubnets",
+              },
+            ],
+          },
+          {
+            "Fn::Select": [
+              2,
+              {
+                "Ref": "PrivateSubnets",
+              },
+            ],
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "devx-backup-enabled",
+            "Value": "true",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBSubnetGroup",
+    },
+    "GatehouseDbreader63FF6C0B": {
+      "DeletionPolicy": "Delete",
+      "DependsOn": [
+        "GatehouseDbwriter4093A800",
+      ],
+      "Properties": {
+        "DBClusterIdentifier": {
+          "Ref": "GatehouseDbFE0B3FEE",
+        },
+        "DBInstanceClass": "db.serverless",
+        "Engine": "aurora-postgresql",
+        "PromotionTier": 1,
+        "PubliclyAccessible": false,
+        "Tags": [
+          {
+            "Key": "devx-backup-enabled",
+            "Value": "true",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBInstance",
+      "UpdateReplacePolicy": "Delete",
+    },
+    "GatehouseDbwriter4093A800": {
+      "DeletionPolicy": "Delete",
+      "Properties": {
+        "DBClusterIdentifier": {
+          "Ref": "GatehouseDbFE0B3FEE",
+        },
+        "DBInstanceClass": "db.serverless",
+        "Engine": "aurora-postgresql",
+        "PromotionTier": 0,
+        "PubliclyAccessible": false,
+        "Tags": [
+          {
+            "Key": "devx-backup-enabled",
+            "Value": "true",
+          },
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+      },
+      "Type": "AWS::RDS::DBInstance",
+      "UpdateReplacePolicy": "Delete",
     },
     "GetDistributablePolicyGatehouse34FFC5AF": {
       "Properties": {
@@ -661,6 +968,99 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
         ],
       },
       "Type": "AWS::IAM::Policy",
+    },
+    "RDSSecurityGroupClientsE0F4CB29": {
+      "Properties": {
+        "GroupDescription": "Allow access to Gatehouse DB from Clients",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "255.255.255.255/32",
+            "Description": "Disallow all traffic",
+            "FromPort": 252,
+            "IpProtocol": "icmp",
+            "ToPort": 86,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "RDSSecurityGroupRules40FD365B": {
+      "Properties": {
+        "GroupDescription": "gatehouse-TEST/RDSSecurityGroupRules",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "255.255.255.255/32",
+            "Description": "Disallow all traffic",
+            "FromPort": 252,
+            "IpProtocol": "icmp",
+            "ToPort": 86,
+          },
+        ],
+        "Tags": [
+          {
+            "Key": "gu:cdk:version",
+            "Value": "TEST",
+          },
+          {
+            "Key": "gu:repo",
+            "Value": "guardian/gatehouse",
+          },
+          {
+            "Key": "Stack",
+            "Value": "identity",
+          },
+          {
+            "Key": "Stage",
+            "Value": "TEST",
+          },
+        ],
+        "VpcId": {
+          "Ref": "VpcId",
+        },
+      },
+      "Type": "AWS::EC2::SecurityGroup",
+    },
+    "RDSSecurityGroupRulesfromgatehouseTESTRDSSecurityGroupClientsEA96E72954327FBC3317": {
+      "Properties": {
+        "Description": "from gatehouseTESTRDSSecurityGroupClientsEA96E729:5432",
+        "FromPort": 5432,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "RDSSecurityGroupRules40FD365B",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "SourceSecurityGroupId": {
+          "Fn::GetAtt": [
+            "RDSSecurityGroupClientsE0F4CB29",
+            "GroupId",
+          ],
+        },
+        "ToPort": 5432,
+      },
+      "Type": "AWS::EC2::SecurityGroupIngress",
     },
     "ReadAppSsmParamsPolicy9DC17627": {
       "Properties": {
