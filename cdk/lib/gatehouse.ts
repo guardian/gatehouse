@@ -286,8 +286,13 @@ export class Gatehouse extends GuStack {
 			enablePerformanceInsights: true,
 			// Under some scenarios AWS can upgrade the database version without downtime
 			// However all upgrades, including minor ones, can result in downtime in certain scenarios.
+			// Our maintenance window during which we can apply upgrades is set to a time when traffic is low.
 			// https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/USER_UpgradeDBInstance.PostgreSQL.MinorUpgrade.html
-			autoMinorVersionUpgrade: false,
+			autoMinorVersionUpgrade: true,
+			preferredMaintenanceWindow: 'Wed:04:30-Wed:05:00',
+			backup: {
+				retention: Duration.days(14),
+			},
 			performanceInsightRetention: PerformanceInsightRetention.DEFAULT,
 			monitoringInterval: Duration.minutes(1),
 			defaultDatabaseName: 'gatehouse',
