@@ -276,7 +276,8 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
     "GatehouseDbFE0B3FEE": {
       "DeletionPolicy": "Snapshot",
       "Properties": {
-        "AutoMinorVersionUpgrade": false,
+        "AutoMinorVersionUpgrade": true,
+        "BackupRetentionPeriod": 14,
         "CopyTagsToSnapshot": true,
         "DBClusterParameterGroupName": {
           "Ref": "GatehouseDbParameterGroupAD12D077",
@@ -302,6 +303,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
         "PerformanceInsightsEnabled": true,
         "PerformanceInsightsRetentionPeriod": 7,
         "Port": 5432,
+        "PreferredMaintenanceWindow": "Wed:04:30-Wed:05:00",
         "ServerlessV2ScalingConfiguration": {
           "MaxCapacity": 1,
           "MinCapacity": 0,
