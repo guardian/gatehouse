@@ -13,6 +13,9 @@ set -e
   yarn synth
 )
 
+# Verify database migrations are correct
+./db/test.sh
+
 # Build a Debian package of app
 sbt clean scalafmtCheckAll scalafmtSbtCheck compile Test/compile test Debian/packageBin
 
