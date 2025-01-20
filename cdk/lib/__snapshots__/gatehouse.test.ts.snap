@@ -230,6 +230,22 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       },
       "Type": "AWS::SSM::Parameter",
     },
+    "DatabaseClusterIdentifierOutputParameterC8ADF3BB": {
+      "Properties": {
+        "Name": "/TEST/identity/gatehouse/db-identifier",
+        "Tags": {
+          "Stack": "identity",
+          "Stage": "TEST",
+          "gu:cdk:version": "TEST",
+          "gu:repo": "guardian/gatehouse",
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "GatehouseDbFE0B3FEE",
+        },
+      },
+      "Type": "AWS::SSM::Parameter",
+    },
     "DescribeEC2PolicyFF5F9295": {
       "Properties": {
         "PolicyDocument": {

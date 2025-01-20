@@ -331,5 +331,11 @@ export class Gatehouse extends GuStack {
 			parameterName: `/${stage}/${stack}/${ec2App}/db-clients-security-group`,
 			stringValue: rdsSecurityGroupClients.securityGroupId,
 		});
+
+		// Output DB Identifier as SSM parameter to be used in other stacks.
+		new StringParameter(this, 'DatabaseClusterIdentifierOutputParameter', {
+			parameterName: `/${stage}/${stack}/${ec2App}/db-identifier`,
+			stringValue: cluster.clusterIdentifier,
+		});
 	}
 }
