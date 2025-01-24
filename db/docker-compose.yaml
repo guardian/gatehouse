@@ -1,0 +1,24 @@
+
+services:
+  db:
+    image: postgres@sha256:c965017e1d29eb03e18a11abc25f5e3cd78cb5ac799d495922264b8489d5a3a1
+    environment:
+      POSTGRES_USER: gatehouse
+      POSTGRES_PASSWORD: gatehouse
+      POSTGRES_DB: gatehouse
+    ports:
+      - "6543:5432"
+
+  migrate:
+    image: flyway/flyway@sha256:1850b2e6b257f774cdd6ad7554dc53cc278351ff0202f7b9b696ceafccbea493
+    depends_on:
+      - db
+    volumes:
+      - ./migrations:/flyway/migrations
+    command: [
+      "migrate", 
+      "-url=jdbc:postgresql://db:5432/gatehouse",
+      "-user=gatehouse",
+      "-password=gatehouse",
+      "-locations=filesystem:./migrations"
+    ]
