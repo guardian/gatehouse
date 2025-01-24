@@ -27,7 +27,7 @@ new Gatehouse(app, 'gatehouse-PROD', {
 	stage: 'PROD',
 	domainName: 'gatehouse-origin.guardianapis.com',
 	database: {
-		minCapacity: 0,
-		maxCapacity: 1,
+		minCapacity: 1,
+		maxCapacity: 8,
 	},
 });
