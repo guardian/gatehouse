@@ -337,5 +337,14 @@ export class Gatehouse extends GuStack {
 			parameterName: `/${stage}/${stack}/${ec2App}/db-identifier`,
 			stringValue: cluster.clusterIdentifier,
 		});
+
+		new StringParameter(
+			this,
+			'DatabaseClusterResourceIdentifierOutputParameter',
+			{
+				parameterName: `/${stage}/${stack}/${ec2App}/db-resource-identifier`,
+				stringValue: cluster.clusterResourceIdentifier,
+			},
+		);
 	}
 }
