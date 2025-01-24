@@ -78,3 +78,18 @@ file.
 TODO: Instructions on how to generate an Okta access token locally.     
 We use the Okta Code org locally because this makes it easier to develop and test with users that have already been
 registered in [Code gateway](https://profile.code.dev-theguardian.com/).
+
+## Database schema migrations
+
+This repo contains the schema files for the Gatehouse database, these can be found in the [`./db`](./db/) folder.
+
+### Creating a new database schema migration
+
+The following steps require `docker`, `aws`, and `jq` installed.
+
+1. Create a new file in [`./db/migrations`](./db/migrations/) with the naming scheme `V(YYYYMMDD)__Migration_Description.sql`. The naming scheme is important and the migration will be skipped if it does not adhere to it, take note of the double underscore between the version number and migration description.
+2. Run `./db/test.sh` to test and verify your new migration against the local test database.
+3. Create a PR and merge your new migration into `main`
+4. Run `./db/migrate.sh CODE` to apply the migrations to CODE.
+   - You will be prompted to rotate the admin user credentials, we suggest you always do this but you may want to delay the rotation if you are worried about your migration causing any outages.
+5. Run `./db/migrate.sh PROD` to apply the migrations to PROD. 
