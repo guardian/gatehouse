@@ -1,0 +1,1 @@
+GRANT INSERT, SELECT, UPDATE, DELETE ON users TO identity_api;
