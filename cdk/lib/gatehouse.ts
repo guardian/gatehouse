@@ -10,10 +10,16 @@ import { GuCname } from '@guardian/cdk/lib/constructs/dns';
 import { GuVpc, SubnetType } from '@guardian/cdk/lib/constructs/ec2';
 import {
 	GuPolicy,
+	GuRole,
 	ReadParametersByName,
 } from '@guardian/cdk/lib/constructs/iam';
 import type { App } from 'aws-cdk-lib';
 import { Duration, SecretValue, Tags } from 'aws-cdk-lib';
+import {
+	CfnEndpoint,
+	CfnReplicationConfig,
+	CfnReplicationSubnetGroup,
+} from 'aws-cdk-lib/aws-dms';
 import {
 	InstanceClass,
 	InstanceSize,
@@ -22,7 +28,13 @@ import {
 	SecurityGroup,
 	UserData,
 } from 'aws-cdk-lib/aws-ec2';
-import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import {
+	CompositePrincipal,
+	Effect,
+	PolicyDocument,
+	PolicyStatement,
+	ServicePrincipal,
+} from 'aws-cdk-lib/aws-iam';
 import type { CfnDBCluster } from 'aws-cdk-lib/aws-rds';
 import {
 	AuroraPostgresEngineVersion,
@@ -32,6 +44,7 @@ import {
 	DatabaseClusterEngine,
 	PerformanceInsightRetention,
 } from 'aws-cdk-lib/aws-rds';
+import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import {
 	ParameterDataType,
 	ParameterTier,
@@ -264,6 +277,14 @@ export class Gatehouse extends GuStack {
 			Port.tcp(databasePort),
 		);
 
+		const subnets = GuVpc.subnetsFromParameterFixedNumber(
+			this,
+			{
+				type: SubnetType.PRIVATE,
+			},
+			3,
+		);
+
 		const cluster = new DatabaseCluster(this, 'GatehouseDb', {
 			engine: DatabaseClusterEngine.auroraPostgres({
 				version: AuroraPostgresEngineVersion.VER_16_6,
@@ -301,13 +322,7 @@ export class Gatehouse extends GuStack {
 			serverlessV2MaxCapacity,
 			securityGroups: [rdsSecurityGroupRules],
 			vpcSubnets: {
-				subnets: GuVpc.subnetsFromParameterFixedNumber(
-					this,
-					{
-						type: SubnetType.PRIVATE,
-					},
-					3,
-				),
+				subnets,
 			},
 			vpc,
 			parameters: {
@@ -346,5 +361,175 @@ export class Gatehouse extends GuStack {
 				stringValue: cluster.clusterResourceIdentifier,
 			},
 		);
+
+		const dmsSourceCredentials = new Secret(this, 'DMSSourceCredentials', {});
+		const dmsTargetCredentials = new Secret(this, 'DMSTargetCredentials', {});
+
+		const dmsSourceIamRole = new GuRole(this, 'DMSSourceIamRole', {
+			assumedBy: new CompositePrincipal(
+				new ServicePrincipal('dms.amazonaws.com', {
+					conditions: {
+						StringEquals: {
+							'aws:SourceAccount': this.account,
+						},
+					},
+				}),
+				new ServicePrincipal('dms.eu-west-1.amazonaws.com', {
+					conditions: {
+						StringEquals: {
+							'aws:SourceAccount': this.account,
+						},
+					},
+				}),
+				new ServicePrincipal('dms-data-migrations.amazonaws.com', {
+					conditions: {
+						StringEquals: {
+							'aws:SourceAccount': this.account,
+						},
+					},
+				}),
+			),
+			inlinePolicies: {
+				retrieveCredentials: new PolicyDocument({
+					statements: [
+						new PolicyStatement({
+							effect: Effect.ALLOW,
+							actions: [
+								'secretsmanager:DescribeSecret',
+								'secretsmanager:GetSecretValue',
+							],
+							resources: [dmsSourceCredentials.secretArn],
+						}),
+					],
+				}),
+			},
+		});
+
+		const dmsMigrationSourceEndpoint = new CfnEndpoint(
+			this,
+			'DMSIdentitySourceEndpoint',
+			{
+				endpointType: 'source',
+				engineName: 'postgres',
+				databaseName: 'identitydb',
+				sslMode: 'require',
+				postgreSqlSettings: {
+					secretsManagerAccessRoleArn: dmsSourceIamRole.roleArn,
+					secretsManagerSecretId: dmsSourceCredentials.secretArn,
+				},
+			},
+		);
+
+		const dmsTargetIamRole = new GuRole(this, 'DMSTargetIamRole', {
+			assumedBy: new CompositePrincipal(
+				new ServicePrincipal('dms.amazonaws.com', {
+					conditions: {
+						StringEquals: {
+							'aws:SourceAccount': this.account,
+						},
+					},
+				}),
+				new ServicePrincipal('dms.eu-west-1.amazonaws.com', {
+					conditions: {
+						StringEquals: {
+							'aws:SourceAccount': this.account,
+						},
+					},
+				}),
+				new ServicePrincipal('dms-data-migrations.amazonaws.com', {
+					conditions: {
+						StringEquals: {
+							'aws:SourceAccount': this.account,
+						},
+					},
+				}),
+			),
+			inlinePolicies: {
+				retrieveCredentials: new PolicyDocument({
+					statements: [
+						new PolicyStatement({
+							effect: Effect.ALLOW,
+							actions: [
+								'secretsmanager:DescribeSecret',
+								'secretsmanager:GetSecretValue',
+							],
+							resources: [dmsTargetCredentials.secretArn],
+						}),
+					],
+				}),
+			},
+		});
+
+		const dmsMigrationTargetEndpoint = new CfnEndpoint(
+			this,
+			'DMSGatehouseTargetEndpoint',
+			{
+				endpointType: 'target',
+				engineName: 'postgres',
+				databaseName: 'gatehouse',
+				sslMode: 'require',
+				postgreSqlSettings: {
+					secretsManagerAccessRoleArn: dmsTargetIamRole.roleArn,
+					secretsManagerSecretId: dmsTargetCredentials.secretArn,
+				},
+			},
+		);
+
+		const dmsSubnetGroup = new CfnReplicationSubnetGroup(
+			this,
+			'DMSReplicationSubnetGroup',
+			{
+				replicationSubnetGroupDescription: 'DMS Replication Subnet Group',
+				subnetIds: subnets.map((subnet) => subnet.subnetId),
+			},
+		);
+
+		new CfnReplicationConfig(this, 'DMSReplicationConfig', {
+			replicationConfigIdentifier: `${ec2App}-${stage}`,
+			replicationSettings: {
+				Logging: {
+					EnableLogging: true,
+				},
+			},
+			computeConfig: {
+				minCapacityUnits: 1,
+				maxCapacityUnits: 16,
+				replicationSubnetGroupId: dmsSubnetGroup.ref,
+				vpcSecurityGroupIds: [
+					rdsSecurityGroupClients.securityGroupId,
+					rdsSecurityGroupId.valueAsString,
+				],
+			},
+			replicationType: 'full-load',
+			sourceEndpointArn: dmsMigrationSourceEndpoint.ref,
+			targetEndpointArn: dmsMigrationTargetEndpoint.ref,
+			tableMappings: {
+				rules: [
+					{
+						'rule-id': '1',
+						'rule-name': '1',
+						'rule-type': 'selection',
+						'rule-action': 'include',
+						'object-locator': {
+							'schema-name': 'public',
+							'table-name': 'users',
+						},
+						filters: [],
+					},
+					{
+						'rule-id': '2',
+						'rule-name': '2',
+						'rule-type': 'transformation',
+						'rule-target': 'table',
+						'rule-action': 'add-prefix',
+						'object-locator': {
+							'schema-name': 'public',
+							'table-name': 'users',
+						},
+						value: 'identity_',
+					},
+				],
+			},
+		});
 	}
 }
