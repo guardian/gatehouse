@@ -14,6 +14,7 @@ case class User(
     address: Address,
     phoneNumber: Option[PhoneNumber],
     registrationLocation: Option[String],
+    registrationLocationState: Option[String],
     permissions: Seq[Permission]
 )
 
@@ -30,6 +31,7 @@ object User {
       address = Address.fromOktaUser(oktaUser),
       phoneNumber = PhoneNumber.fromOktaUser(oktaUser),
       registrationLocation = customProfileField(oktaUser, "registrationLocation"),
+      registrationLocationState = customProfileField(oktaUser, "registrationLocationState"),
       permissions = Nil
     )
   }
@@ -63,6 +65,7 @@ object User {
         "internationalDiallingCode" -> user.phoneNumber.map(_.countryCode),
         "localNumber" -> user.phoneNumber.map(_.localNumber),
         "registrationLocation" -> user.registrationLocation,
+        "registrationLocationState" -> user.registrationLocationState,
         "permissions" -> user.permissions
       )
   }

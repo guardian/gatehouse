@@ -30,6 +30,7 @@ class UserSpec extends PlaySpec with MockitoSugar {
         ),
         phoneNumber = Some(PhoneNumber(44, "12345")),
         registrationLocation = Some("online"),
+        registrationLocationState = Some("other"),
         permissions = Seq(Permission("p1", true), Permission("p2", false), Permission("p3", true))
       )
       Json.stringify(Json.toJson(user)(User.writes.me)) shouldBe
@@ -50,6 +51,7 @@ class UserSpec extends PlaySpec with MockitoSugar {
           |"internationalDiallingCode":44,
           |"localNumber":"12345",
           |"registrationLocation":"online",
+          |"registrationLocationState":"other",
           |"permissions":[{"id":"p1","permitted":true},{"id":"p2","permitted":false},{"id":"p3","permitted":true}]
           |}""".stripMargin.replace("\n", "")
     }
