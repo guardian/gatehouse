@@ -44,6 +44,7 @@ class OktaUserServiceSpec extends PlaySpec with MockitoSugar {
         address = Address(None, None, None, None, None, None),
         phoneNumber = None,
         registrationLocation = None,
+        registrationLocationState = None,
         permissions = Nil
       )
 
