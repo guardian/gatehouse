@@ -22,3 +22,5 @@ services:
       "-password=gatehouse",
       "-locations=filesystem:./migrations"
     ]
+    environment:
+      JAVA_ARGS: -XX:UseSVE=0 -XX:+IgnoreUnrecognizedVMOptions
