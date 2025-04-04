@@ -806,6 +806,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
             "Key": "Stage",
             "Value": "TEST",
           },
+          {
+            "Key": "test",
+            "Value": "true3",
+          },
         ],
         "VpcSecurityGroupIds": [
           {
@@ -868,6 +872,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
             "Key": "Stage",
             "Value": "TEST",
           },
+          {
+            "Key": "test",
+            "Value": "true3",
+          },
         ],
       },
       "Type": "AWS::IAM::Role",
@@ -899,6 +907,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           {
             "Key": "Stage",
             "Value": "TEST",
+          },
+          {
+            "Key": "test",
+            "Value": "true3",
           },
         ],
       },
@@ -954,6 +966,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
             "Key": "Stage",
             "Value": "TEST",
           },
+          {
+            "Key": "test",
+            "Value": "true3",
+          },
         ],
       },
       "Type": "AWS::RDS::DBSubnetGroup",
@@ -968,7 +984,9 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           "Ref": "GatehouseDbFE0B3FEE",
         },
         "DBInstanceClass": "db.serverless",
+        "EnablePerformanceInsights": true,
         "Engine": "aurora-postgresql",
+        "PerformanceInsightsRetentionPeriod": 7,
         "PromotionTier": 1,
         "PubliclyAccessible": false,
         "Tags": [
@@ -992,6 +1010,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
             "Key": "Stage",
             "Value": "TEST",
           },
+          {
+            "Key": "test",
+            "Value": "true3",
+          },
         ],
       },
       "Type": "AWS::RDS::DBInstance",
@@ -1004,7 +1026,9 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           "Ref": "GatehouseDbFE0B3FEE",
         },
         "DBInstanceClass": "db.serverless",
+        "EnablePerformanceInsights": true,
         "Engine": "aurora-postgresql",
+        "PerformanceInsightsRetentionPeriod": 7,
         "PromotionTier": 0,
         "PubliclyAccessible": false,
         "Tags": [
@@ -1027,6 +1051,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           {
             "Key": "Stage",
             "Value": "TEST",
+          },
+          {
+            "Key": "test",
+            "Value": "true3",
           },
         ],
       },
