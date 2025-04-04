@@ -808,7 +808,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           },
           {
             "Key": "test",
-            "Value": "true2",
+            "Value": "true3",
           },
         ],
         "VpcSecurityGroupIds": [
@@ -874,7 +874,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           },
           {
             "Key": "test",
-            "Value": "true2",
+            "Value": "true3",
           },
         ],
       },
@@ -910,7 +910,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           },
           {
             "Key": "test",
-            "Value": "true2",
+            "Value": "true3",
           },
         ],
       },
@@ -968,7 +968,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           },
           {
             "Key": "test",
-            "Value": "true2",
+            "Value": "true3",
           },
         ],
       },
@@ -1012,7 +1012,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           },
           {
             "Key": "test",
-            "Value": "true2",
+            "Value": "true3",
           },
         ],
       },
@@ -1054,7 +1054,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           },
           {
             "Key": "test",
-            "Value": "true2",
+            "Value": "true3",
           },
         ],
       },
