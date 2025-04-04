@@ -336,7 +336,7 @@ export class Gatehouse extends GuStack {
 		// Resources tagged with devx-backup-enabled=true will be backed up by the DevX backup service
 		// https://github.com/guardian/aws-account-setup/blob/42885f5d22dbee137950d4e7500bbb1d7cc1bf77/packages/cdk/lib/aws-backup.ts#L72-L76
 		Tags.of(cluster).add('devx-backup-enabled', 'true');
-		Tags.of(cluster).add('test', 'true');
+		Tags.of(cluster).add('test', 'true2');
 
 		// CDK currently does not support ManagerMasterUserPassword
 		// See https://github.com/aws/aws-cdk/issues/29239
