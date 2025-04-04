@@ -984,7 +984,9 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           "Ref": "GatehouseDbFE0B3FEE",
         },
         "DBInstanceClass": "db.serverless",
+        "EnablePerformanceInsights": true,
         "Engine": "aurora-postgresql",
+        "PerformanceInsightsRetentionPeriod": 7,
         "PromotionTier": 1,
         "PubliclyAccessible": false,
         "Tags": [
@@ -1024,7 +1026,9 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           "Ref": "GatehouseDbFE0B3FEE",
         },
         "DBInstanceClass": "db.serverless",
+        "EnablePerformanceInsights": true,
         "Engine": "aurora-postgresql",
+        "PerformanceInsightsRetentionPeriod": 7,
         "PromotionTier": 0,
         "PubliclyAccessible": false,
         "Tags": [

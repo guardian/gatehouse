@@ -285,16 +285,19 @@ export class Gatehouse extends GuStack {
 			3,
 		);
 
-		const writer = ClusterInstance.serverlessV2('writer');
-
 		const cluster = new DatabaseCluster(this, 'GatehouseDb', {
 			engine: DatabaseClusterEngine.auroraPostgres({
 				version: AuroraPostgresEngineVersion.VER_16_6,
 			}),
-			writer,
+			writer: ClusterInstance.serverlessV2('writer', {
+				enablePerformanceInsights: true,
+			}),
 			readers: [
 				// Scale reader instance with writer so that it can deal with immediate traffic spike during failover
-				ClusterInstance.serverlessV2('reader', { scaleWithWriter: true }),
+				ClusterInstance.serverlessV2('reader', {
+					scaleWithWriter: true,
+					enablePerformanceInsights: true,
+				}),
 			],
 			credentials: Credentials.fromPassword(
 				'postgres',
