@@ -806,6 +806,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
             "Key": "Stage",
             "Value": "TEST",
           },
+          {
+            "Key": "test",
+            "Value": "true",
+          },
         ],
         "VpcSecurityGroupIds": [
           {
@@ -868,6 +872,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
             "Key": "Stage",
             "Value": "TEST",
           },
+          {
+            "Key": "test",
+            "Value": "true",
+          },
         ],
       },
       "Type": "AWS::IAM::Role",
@@ -899,6 +907,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           {
             "Key": "Stage",
             "Value": "TEST",
+          },
+          {
+            "Key": "test",
+            "Value": "true",
           },
         ],
       },
@@ -954,6 +966,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
             "Key": "Stage",
             "Value": "TEST",
           },
+          {
+            "Key": "test",
+            "Value": "true",
+          },
         ],
       },
       "Type": "AWS::RDS::DBSubnetGroup",
@@ -992,6 +1008,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
             "Key": "Stage",
             "Value": "TEST",
           },
+          {
+            "Key": "test",
+            "Value": "true",
+          },
         ],
       },
       "Type": "AWS::RDS::DBInstance",
@@ -1027,6 +1047,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           {
             "Key": "Stage",
             "Value": "TEST",
+          },
+          {
+            "Key": "test",
+            "Value": "true",
           },
         ],
       },
