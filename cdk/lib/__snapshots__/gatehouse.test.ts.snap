@@ -344,7 +344,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
               "filters": [],
               "object-locator": {
                 "schema-name": "public",
-                "table-name": "users",
+                "table-name": "clients",
               },
               "rule-action": "include",
               "rule-id": "1",
@@ -352,13 +352,36 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
               "rule-type": "selection",
             },
             {
+              "filters": [],
               "object-locator": {
                 "schema-name": "public",
-                "table-name": "users",
+                "table-name": "clientaccesstokens",
               },
-              "rule-action": "add-prefix",
+              "rule-action": "include",
               "rule-id": "2",
               "rule-name": "2",
+              "rule-type": "selection",
+            },
+            {
+              "object-locator": {
+                "schema-name": "public",
+                "table-name": "clients",
+              },
+              "rule-action": "add-prefix",
+              "rule-id": "3",
+              "rule-name": "3",
+              "rule-target": "table",
+              "rule-type": "transformation",
+              "value": "identity_",
+            },
+            {
+              "object-locator": {
+                "schema-name": "public",
+                "table-name": "clientaccesstokens",
+              },
+              "rule-action": "add-prefix",
+              "rule-id": "4",
+              "rule-name": "4",
               "rule-target": "table",
               "rule-type": "transformation",
               "value": "identity_",
