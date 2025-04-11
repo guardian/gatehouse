@@ -6,7 +6,7 @@ export AWS_PROFILE=identity
 # flyway/flyway:11-alpine
 FLYWAY_CONTAINER="flyway/flyway@sha256:1850b2e6b257f774cdd6ad7554dc53cc278351ff0202f7b9b696ceafccbea493"
 
-Grey=$"\033[30m"
+Magenta=$"\033[35m"
 Red='\033[31m'
 GreenBold='\033[1;32m'
 Yellow='\033[33m'
@@ -108,7 +108,7 @@ echo -e "${White}Starting SSH tunnel to writer endpoint...${Clear}"
 SSH_TUNNEL_COMMAND="$(ssm ssh --raw -t identity-psql-client,${STAGE},identity 2>/dev/null) \
     -o ExitOnForwardFailure=yes -fN -L 6543:${DB_WRITER_ENDPOINT}:5432"
 
-echo -e "${White}Executing SSH tunnel command:\n\n${Grey}${SSH_TUNNEL_COMMAND}${Clear}\n"
+echo -e "${White}Executing SSH tunnel command:\n\n${Magenta}${SSH_TUNNEL_COMMAND}${Clear}\n"
 
 # Slightly hacky but couldn't get SSH ControlMaster to work with the AWS session-manager-plugin
 # Terminate the SSH connection when the script exits as SSH doesn't seem to be able to clean up
@@ -119,7 +119,7 @@ trap "cleanup_ssh_tunnel" EXIT
 eval "$SSH_TUNNEL_COMMAND"
 echo -e "${White}SSH tunnel open, Database available on ${Yellow}127.0.0.1:6543${White}.${Reset}"
 
-echo -e "${White}Starting migration...${Grey}\n"
+echo -e "${White}Starting migration...${Magenta}\n"
 
 LOCALHOST='host.docker.internal'
 if [[ ! -z "$CI" ]]; then
@@ -130,15 +130,19 @@ fi
 
 # Check pending migrations
 FLYWAY_OPTS="-url=jdbc:postgresql://${LOCALHOST}:6543/gatehouse -user=${DB_USERNAME} -password=${DB_PASSWORD} -locations=filesystem:./migrations"
-docker run --net host --rm -v $(dirname "$0")/migrations:/flyway/migrations ${FLYWAY_CONTAINER} \
-    info ${FLYWAY_OPTS}
+docker run  \
+    --net host \
+    --rm \
+    -v $(dirname "$0")/migrations:/flyway/migrations \
+    -e JAVA_ARGS="-XX:UseSVE=0 -XX:+IgnoreUnrecognizedVMOptions" \
+    ${FLYWAY_CONTAINER} info ${FLYWAY_OPTS}
 
 if [[ "$?" != "0" ]]; then
     echo -e "${Red}Database migration failed.${Reset}"
     exit 1
 fi
 
-echo -e "${WhiteBold}Apply pending migrations? ${Yellow}[y/N]${Reset}${Grey}"
+echo -e "${WhiteBold}Apply pending migrations? ${Yellow}[y/N]${Reset}${Magenta}"
 
 read -r input
 if [[ "${input}" != [Yy] ]]; then
@@ -149,8 +153,12 @@ fi
 echo ""
 
 # Apply database migrations
-docker run --net host --rm -v $(dirname "$0")/migrations:/flyway/migrations ${FLYWAY_CONTAINER} \
-    migrate ${FLYWAY_OPTS}
+docker run \
+    --net host \
+    --rm \
+    -v $(dirname "$0")/migrations:/flyway/migrations \
+    -e JAVA_ARGS="-XX:UseSVE=0 -XX:+IgnoreUnrecognizedVMOptions" \
+    ${FLYWAY_CONTAINER} migrate ${FLYWAY_OPTS}
 
 echo ""
 
@@ -164,7 +172,7 @@ fi
 # Rotate admin user credentials
 echo -e "${WhiteBold}Rotate Admin Credentials?${Reset}"
 echo -e "${White}Rotating admin credentials will take a few minutes and break this script until it has completed.${Reset}\n"
-echo -e "${White}You can also trigger the secret rotation manually using the following command:${Grey}\n\naws secretsmanager rotate-secret --secret-id ${DB_SECRET_ARN} --profile identity --region eu-west-1\n"
+echo -e "${White}You can also trigger the secret rotation manually using the following command:${Magenta}\n\naws secretsmanager rotate-secret --secret-id ${DB_SECRET_ARN} --profile identity --region eu-west-1\n"
 echo -e "${White}Rotate admin user credentials now? ${Yellow}[Y/n]${Reset}\n"
 
 read -r input
