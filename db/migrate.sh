@@ -130,8 +130,12 @@ fi
 
 # Check pending migrations
 FLYWAY_OPTS="-url=jdbc:postgresql://${LOCALHOST}:6543/gatehouse -user=${DB_USERNAME} -password=${DB_PASSWORD} -locations=filesystem:./migrations"
-docker run --net host --rm -v $(dirname "$0")/migrations:/flyway/migrations ${FLYWAY_CONTAINER} \
-    info ${FLYWAY_OPTS}
+docker run  \
+    --net host \
+    --rm \
+    -v $(dirname "$0")/migrations:/flyway/migrations \
+    -e JAVA_ARGS="-XX:UseSVE=0 -XX:+IgnoreUnrecognizedVMOptions" \
+    ${FLYWAY_CONTAINER} info ${FLYWAY_OPTS}
 
 if [[ "$?" != "0" ]]; then
     echo -e "${Red}Database migration failed.${Reset}"
@@ -149,8 +153,12 @@ fi
 echo ""
 
 # Apply database migrations
-docker run --net host --rm -v $(dirname "$0")/migrations:/flyway/migrations ${FLYWAY_CONTAINER} \
-    migrate ${FLYWAY_OPTS}
+docker run \
+    --net host \
+    --rm \
+    -v $(dirname "$0")/migrations:/flyway/migrations \
+    -e JAVA_ARGS="-XX:UseSVE=0 -XX:+IgnoreUnrecognizedVMOptions" \
+    ${FLYWAY_CONTAINER} migrate ${FLYWAY_OPTS}
 
 echo ""
 
