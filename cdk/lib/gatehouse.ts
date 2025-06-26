@@ -222,6 +222,7 @@ export class Gatehouse extends GuStack {
 			roleConfiguration: {
 				additionalPolicies: [readAppSsmParamsPolicy, xrayTelemetryPolicy],
 			},
+			instanceMetricGranularity: '5Minute',
 		});
 
 		app.autoScalingGroup.connections.addSecurityGroup(
