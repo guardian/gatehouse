@@ -24,7 +24,7 @@ jobs:
       # Node is needed for CDK
       - uses: actions/setup-node@v4
         with:
-          node-version-file: cdk/.nvmrc
+          node-version-file: .tool-versions
           cache: yarn
           cache-dependency-path: cdk/yarn.lock
 
