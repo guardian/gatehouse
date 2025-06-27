@@ -34,7 +34,7 @@ lazy val root = (project in file("."))
         exclude ("org.scala-lang.modules", "scala-parser-combinators_2.13")
         exclude ("com.fasterxml.jackson.module", "jackson-module-scala_2.13")
         exclude ("com.typesafe", "ssl-config-core_2.13"),
-      "org.postgresql" % "postgresql" % "42.7.3",
+      "org.postgresql" % "postgresql" % "42.7.7",
       "com.okta.sdk" % "okta-sdk-api" % "23.0.1",
       "com.okta.sdk" % "okta-sdk-impl" % "23.0.1" % Runtime,
       "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.55",
