@@ -41,7 +41,7 @@ lazy val root = (project in file("."))
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
     dependencyOverrides ++= {
-      val jacksonVersion = "2.17.0"
+      val jacksonVersion = "2.17.3"
       Seq(
         // To keep all Jackson dependencies on the same version
         "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % jacksonVersion % Runtime,
