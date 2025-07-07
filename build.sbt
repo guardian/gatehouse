@@ -38,7 +38,7 @@ lazy val root = (project in file("."))
       "com.okta.sdk" % "okta-sdk-api" % "23.0.1",
       "com.okta.sdk" % "okta-sdk-impl" % "23.0.1" % Runtime,
       "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.55",
-      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
+      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test,
     ),
     dependencyOverrides ++= {
       val jacksonVersion = "2.17.3"
