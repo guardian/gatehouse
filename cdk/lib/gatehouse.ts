@@ -1,5 +1,6 @@
 import { GuPlayApp } from '@guardian/cdk';
 import { AccessScope } from '@guardian/cdk/lib/constants/access';
+import { GuAlarm } from '@guardian/cdk/lib/constructs/cloudwatch';
 import type { GuStackProps } from '@guardian/cdk/lib/constructs/core';
 import {
 	GuDistributionBucketParameter,
@@ -15,6 +16,7 @@ import {
 } from '@guardian/cdk/lib/constructs/iam';
 import type { App } from 'aws-cdk-lib';
 import { Duration, SecretValue, Tags } from 'aws-cdk-lib';
+import { ComparisonOperator, Metric } from 'aws-cdk-lib/aws-cloudwatch';
 import {
 	CfnEndpoint,
 	CfnReplicationConfig,
@@ -45,6 +47,8 @@ import {
 	PerformanceInsightRetention,
 } from 'aws-cdk-lib/aws-rds';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import {
 	ParameterDataType,
 	ParameterTier,
@@ -330,6 +334,43 @@ export class Gatehouse extends GuStack {
 				// Require verifying SSL before connecting to DB
 				'rds.force_ssl': '1',
 			},
+		});
+
+		const alarmNotificationEmail = new GuStringParameter(
+			this,
+			'alarmNotificationEmail',
+			{
+				fromSSM: true,
+				default: `/${stage}/${stack}/${ec2App}/alarmNotificationEmail`,
+				description: 'Notification email for gatehouse DB Alarms.',
+			},
+		);
+
+		const notificationTopic = new Topic(this, 'NotificationTopic', {
+			displayName: 'Gatehouse notifications',
+		});
+
+		notificationTopic.addSubscription(
+			new EmailSubscription(alarmNotificationEmail.valueAsString),
+		);
+		new GuAlarm(this, 'HighUsageAlarm', {
+			app: 'gatehouseDB',
+			alarmName: 'High usage in Gatehouse database',
+			alarmDescription: 'Gatehouse usage is above 80%',
+			snsTopicName: notificationTopic.topicName,
+			actionsEnabled: this.stage === 'PROD',
+			threshold: 80,
+			evaluationPeriods: 2,
+			comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
+			metric: new Metric({
+				metricName: 'ACUUtilization',
+				namespace: 'AWS/RDS',
+				dimensionsMap: {
+					DBClusterIdentifier: cluster.clusterIdentifier,
+				},
+				statistic: 'Average',
+				period: Duration.seconds(60),
+			}),
 		});
 
 		// Resources tagged with devx-backup-enabled=true will be backed up by the DevX backup service
