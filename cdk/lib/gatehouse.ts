@@ -535,7 +535,7 @@ export class Gatehouse extends GuStack {
 			},
 			computeConfig: {
 				minCapacityUnits: 1,
-				maxCapacityUnits: 8,
+				maxCapacityUnits: 16,
 				replicationSubnetGroupId: dmsSubnetGroup.ref,
 				vpcSecurityGroupIds: [
 					rdsSecurityGroupClients.securityGroupId,
