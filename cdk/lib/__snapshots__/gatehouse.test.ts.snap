@@ -317,7 +317,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
     "DMSReplicationConfig": {
       "Properties": {
         "ComputeConfig": {
-          "MaxCapacityUnits": 16,
+          "MaxCapacityUnits": 8,
           "MinCapacityUnits": 1,
           "ReplicationSubnetGroupId": {
             "Ref": "DMSReplicationSubnetGroup",
@@ -1225,7 +1225,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
           },
         ],
         "AlarmDescription": "Gatehouse usage is above 80%",
-        "AlarmName": "High usage in Gatehouse database",
+        "AlarmName": "High usage in TEST Gatehouse database",
         "ComparisonOperator": "GreaterThanOrEqualToThreshold",
         "Dimensions": [
           {

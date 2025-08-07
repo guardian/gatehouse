@@ -355,7 +355,7 @@ export class Gatehouse extends GuStack {
 		);
 		new GuAlarm(this, 'HighUsageAlarm', {
 			app: 'gatehouseDB',
-			alarmName: 'High usage in Gatehouse database',
+			alarmName: `High usage in ${this.stage} Gatehouse database`,
 			alarmDescription: 'Gatehouse usage is above 80%',
 			snsTopicName: notificationTopic.topicName,
 			actionsEnabled: this.stage === 'PROD',
@@ -535,7 +535,7 @@ export class Gatehouse extends GuStack {
 			},
 			computeConfig: {
 				minCapacityUnits: 1,
-				maxCapacityUnits: 16,
+				maxCapacityUnits: 8,
 				replicationSubnetGroupId: dmsSubnetGroup.ref,
 				vpcSecurityGroupIds: [
 					rdsSecurityGroupClients.securityGroupId,
