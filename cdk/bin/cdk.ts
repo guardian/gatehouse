@@ -17,7 +17,7 @@ new Gatehouse(app, 'gatehouse-CODE', {
 	domainName: 'gatehouse-origin.code.dev-guardianapis.com',
 	database: {
 		minCapacity: 0.5,
-		maxCapacity: 1,
+		maxCapacity: 2,
 	},
 });
 
