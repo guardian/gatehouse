@@ -317,7 +317,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
     "DMSReplicationConfig": {
       "Properties": {
         "ComputeConfig": {
-          "MaxCapacityUnits": 8,
+          "MaxCapacityUnits": 16,
           "MinCapacityUnits": 1,
           "ReplicationSubnetGroupId": {
             "Ref": "DMSReplicationSubnetGroup",
