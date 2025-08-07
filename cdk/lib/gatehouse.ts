@@ -358,7 +358,7 @@ export class Gatehouse extends GuStack {
 			alarmName: `High usage in ${this.stage} Gatehouse database`,
 			alarmDescription: 'Gatehouse usage is above 80%',
 			snsTopicName: notificationTopic.topicName,
-			actionsEnabled: this.stage === 'PROD',
+			actionsEnabled: true,
 			threshold: 80,
 			evaluationPeriods: 2,
 			comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
