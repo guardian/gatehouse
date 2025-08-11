@@ -23,7 +23,7 @@ lazy val root = (project in file("."))
     Test / javaOptions += "-Dlogback.configurationFile=logback-test.xml",
     libraryDependencies ++= Seq(
       ws,
-      "org.playframework" %% "play-slick" % "6.1.0",
+      "org.playframework" %% "play-slick" % "6.1.1",
       "net.logstash.logback" % "logstash-logback-encoder" % "8.1",
       ("com.gu" %% "simple-configuration-ssm" % "6.0.1").cross(CrossVersion.for3Use2_13),
       /* Using Scala 2.13 version of identity-auth-play until a Scala 3 version has been released:
