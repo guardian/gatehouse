@@ -24,7 +24,7 @@ lazy val root = (project in file("."))
     libraryDependencies ++= Seq(
       ws,
       "org.playframework" %% "play-slick" % "6.1.0",
-      "net.logstash.logback" % "logstash-logback-encoder" % "7.4",
+      "net.logstash.logback" % "logstash-logback-encoder" % "8.1",
       ("com.gu" %% "simple-configuration-ssm" % "6.0.1").cross(CrossVersion.for3Use2_13),
       /* Using Scala 2.13 version of identity-auth-play until a Scala 3 version has been released:
        * https://trello.com/c/5kOc41kD/4669-release-scala-3-version-of-identity-libraries */
