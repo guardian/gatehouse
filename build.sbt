@@ -34,6 +34,8 @@ lazy val root = (project in file("."))
         exclude ("org.scala-lang.modules", "scala-parser-combinators_2.13")
         exclude ("com.fasterxml.jackson.module", "jackson-module-scala_2.13")
         exclude ("com.typesafe", "ssl-config-core_2.13"),
+      // just to override the older version brought in by simple-configuration
+      "io.netty" % "netty-codec-http2" % "4.1.124.Final",
       "org.postgresql" % "postgresql" % "42.7.3",
       "com.okta.sdk" % "okta-sdk-api" % "15.0.0",
       "com.okta.sdk" % "okta-sdk-impl" % "15.0.0" % Runtime,
