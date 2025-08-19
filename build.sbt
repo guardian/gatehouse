@@ -38,7 +38,7 @@ lazy val root = (project in file("."))
       "io.netty" % "netty-codec-http2" % "4.1.124.Final",
       "org.postgresql" % "postgresql" % "42.7.3",
       "com.okta.sdk" % "okta-sdk-api" % "24.0.0",
-      "com.okta.sdk" % "okta-sdk-impl" % "15.0.0" % Runtime,
+      "com.okta.sdk" % "okta-sdk-impl" % "24.0.0" % Runtime,
       "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.55",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
