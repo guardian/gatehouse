@@ -1228,10 +1228,10 @@
   resolved "https://registry.yarnpkg.com/@types/json-schema/-/json-schema-7.0.15.tgz#596a1747233694d50f6ad8a7869fcb6f56cf5841"
   integrity sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==
 
-"@types/node@*", "@types/node@24.2.1":
-  version "24.2.1"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-24.2.1.tgz#83e41543f0a518e006594bb394e2cd961de56727"
-  integrity sha512-DRh5K+ka5eJic8CjH7td8QpYEV6Zo10gfRkjHCO3weqZHWDtAaSTFtl4+VMqOJ4N5jcuhZ9/l+yy8rVgw7BQeQ==
+"@types/node@*", "@types/node@24.3.0":
+  version "24.3.0"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-24.3.0.tgz#89b09f45cb9a8ee69466f18ee5864e4c3eb84dec"
+  integrity sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==
   dependencies:
     undici-types "~7.10.0"
 
@@ -1758,10 +1758,10 @@ available-typed-arrays@^1.0.7:
   dependencies:
     possible-typed-array-names "^1.0.0"
 
-aws-cdk-lib@2.210.0:
-  version "2.210.0"
-  resolved "https://registry.yarnpkg.com/aws-cdk-lib/-/aws-cdk-lib-2.210.0.tgz#ac06a1e5fc25a2f3d1ff7f96017cdb5fd3f85481"
-  integrity sha512-TSXaZLHKak1bk144PblhqBHZwyh9lvlN2yM4g52aR/HCuxlw2nkn+eupjuOtiNe0JJFwSudvO/qke65dN2WlEg==
+aws-cdk-lib@2.211.0:
+  version "2.211.0"
+  resolved "https://registry.yarnpkg.com/aws-cdk-lib/-/aws-cdk-lib-2.211.0.tgz#da8b0210113340c43e180abfb3bf6f4181083071"
+  integrity sha512-wrEPu25572HUJwySzL/qf/fFM+a22X7HYpq1uqcjAn4sVL+h52WjVjnI7rDAuhBp6efX6+Jhmw7jZDMql4/+Cw==
   dependencies:
     "@aws-cdk/asset-awscli-v1" "2.2.242"
     "@aws-cdk/asset-node-proxy-agent-v6" "^2.1.0"
@@ -1778,10 +1778,10 @@ aws-cdk-lib@2.210.0:
     table "^6.9.0"
     yaml "1.10.2"
 
-aws-cdk@2.1024.0:
-  version "2.1024.0"
-  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.1024.0.tgz#c4fac23fa577a1a6e2253e68fa7a8b07cb6816aa"
-  integrity sha512-hY0iVT2gPX/QOQXL7RSP2sqIRI/4BYU27vSmbhZxLEj//c3pkMkd9QpIHj7gOhyWC2gf6n5JuYPw27Dgw8FEdA==
+aws-cdk@2.1025.0:
+  version "2.1025.0"
+  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.1025.0.tgz#6887de917cc6ab3aaee121b919a68d40d31708e0"
+  integrity sha512-qKYM+RG5+U/UbGpjTt8ZaxBEfKJMPdOmtPtFNidsIGlrdIWSIFdNcFYi13zo33FkMk6ZFA6yBnjfDry3fNR+hQ==
   optionalDependencies:
     fsevents "2.3.2"
 
