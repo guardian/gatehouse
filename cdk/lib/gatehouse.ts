@@ -296,8 +296,7 @@ export class Gatehouse extends GuStack {
 			}),
 			writer: ClusterInstance.serverlessV2('writer'),
 			readers: [
-				// Scale reader instance with writer so that it can deal with immediate traffic spike during failover
-				ClusterInstance.serverlessV2('reader', { scaleWithWriter: true }),
+				ClusterInstance.serverlessV2('reader', { scaleWithWriter: false }),
 			],
 			credentials: Credentials.fromPassword(
 				'postgres',

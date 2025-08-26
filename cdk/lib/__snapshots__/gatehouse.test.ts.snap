@@ -998,7 +998,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
         },
         "DBInstanceClass": "db.serverless",
         "Engine": "aurora-postgresql",
-        "PromotionTier": 1,
+        "PromotionTier": 2,
         "PubliclyAccessible": false,
         "Tags": [
           {
