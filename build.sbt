@@ -4,7 +4,7 @@ lazy val root = (project in file("."))
     name := "gatehouse",
     version := "0.1.0-SNAPSHOT",
     maintainer := "Guardian Identity team",
-    scalaVersion := "3.3.3",
+    scalaVersion := "3.3.7",
     scalacOptions ++= Seq(
       "-explain",
       "-feature",
