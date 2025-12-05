@@ -41,6 +41,8 @@ lazy val root = (project in file("."))
       "com.okta.sdk" % "okta-sdk-impl" % "15.0.0" % Runtime,
       "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.35",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
+      // replace the lz4 version brought in by play which has a vulnerability
+      "at.yawk.lz4" % "lz4-java" % "1.8.1"
     ),
     dependencyOverrides ++= {
       val jacksonVersion = "2.17.0"
@@ -54,6 +56,12 @@ lazy val root = (project in file("."))
     },
     excludeDependencies ++= Seq(
       // As of Play 3.0, groupId has changed to org.playframework; exclude transitive dependencies to the old artifacts
-      ExclusionRule(organization = "com.typesafe.play")
+      ExclusionRule(organization = "com.typesafe.play"),
+      // we need to explicitly exclude this dependency until there's a new version of play that fixes this vulnerability
+      // https://github.com/guardian/gatehouse/security/dependabot/48
+      ExclusionRule(
+        organization = "org.lz4",
+        name = "lz4-java"
+      )
     ),
   )
