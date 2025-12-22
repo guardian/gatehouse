@@ -42,7 +42,7 @@ lazy val root = (project in file("."))
       "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.35",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
       // replace the lz4 version brought in by play which has a vulnerability
-      "at.yawk.lz4" % "lz4-java" % "1.10.1"
+      "at.yawk.lz4" % "lz4-java" % "1.10.2"
     ),
     dependencyOverrides ++= {
       val jacksonVersion = "2.17.0"
