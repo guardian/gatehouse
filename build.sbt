@@ -37,8 +37,8 @@ lazy val root = (project in file("."))
       // just to override the older version brought in by simple-configuration
       "io.netty" % "netty-codec-http2" % "4.1.124.Final",
       "org.postgresql" % "postgresql" % "42.7.3",
-      "com.okta.sdk" % "okta-sdk-api" % "15.0.0",
-      "com.okta.sdk" % "okta-sdk-impl" % "15.0.0" % Runtime,
+      "com.okta.sdk" % "okta-sdk-api" % "25.0.0",
+      "com.okta.sdk" % "okta-sdk-impl" % "25.0.0" % Runtime,
       "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.35",
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
       // replace the lz4 version brought in by play which has a vulnerability
