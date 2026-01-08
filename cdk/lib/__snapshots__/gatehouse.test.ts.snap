@@ -1199,7 +1199,7 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
     },
     "HighUsageAlarm983B2726": {
       "Properties": {
-        "ActionsEnabled": false,
+        "ActionsEnabled": true,
         "AlarmActions": [
           {
             "Fn::Join": [
