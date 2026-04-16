@@ -22,13 +22,13 @@
     "aws-cdk": "2.1118.0",
     "aws-cdk-lib": "2.249.0",
     "constructs": "10.6.0",
-    "eslint": "^10.0.3",
+    "eslint": "^9.39.4",
     "jest": "^30.3.0",
     "prettier": "^3.8.2",
     "source-map-support": "^0.5.20",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "6.0.2"
+    "typescript": "5.9.3"
   },
   "prettier": "@guardian/prettier",
   "jest": {
