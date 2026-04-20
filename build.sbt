@@ -4,7 +4,7 @@ lazy val root = (project in file("."))
     name := "gatehouse",
     version := "0.1.0-SNAPSHOT",
     maintainer := "Guardian Identity team",
-    scalaVersion := "3.3.3",
+    scalaVersion := "3.3.7",
     scalacOptions ++= Seq(
       "-explain",
       "-feature",
@@ -23,7 +23,7 @@ lazy val root = (project in file("."))
     Test / javaOptions += "-Dlogback.configurationFile=logback-test.xml",
     libraryDependencies ++= Seq(
       ws,
-      "org.playframework" %% "play-slick" % "6.1.0",
+      "org.playframework" %% "play-slick" % "6.1.1",
       "net.logstash.logback" % "logstash-logback-encoder" % "7.4",
       ("com.gu" %% "simple-configuration-ssm" % "6.0.2").cross(CrossVersion.for3Use2_13),
       /* Using Scala 2.13 version of identity-auth-play until a Scala 3 version has been released:
@@ -36,11 +36,11 @@ lazy val root = (project in file("."))
         exclude ("com.typesafe", "ssl-config-core_2.13"),
       // just to override the older version brought in by simple-configuration
       "io.netty" % "netty-codec-http2" % "4.1.132.Final",
-      "org.postgresql" % "postgresql" % "42.7.3",
+      "org.postgresql" % "postgresql" % "42.7.10",
       "com.okta.sdk" % "okta-sdk-api" % "15.0.0",
       "com.okta.sdk" % "okta-sdk-impl" % "15.0.0" % Runtime,
-      "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.35",
-      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
+      "com.googlecode.libphonenumber" % "libphonenumber" % "8.13.55",
+      "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test,
     ),
     dependencyOverrides ++= {
       val jacksonVersion = "2.18.6"
