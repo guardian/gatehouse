@@ -22,7 +22,7 @@
     "aws-cdk": "2.1118.4",
     "aws-cdk-lib": "2.250.0",
     "constructs": "10.6.0",
-    "eslint": "^10.0.3",
+    "eslint": "^9.39.4",
     "jest": "^30.3.0",
     "prettier": "^3.8.3",
     "source-map-support": "^0.5.20",
