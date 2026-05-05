@@ -28,14 +28,14 @@ lazy val root = (project in file("."))
       ("com.gu" %% "simple-configuration-ssm" % "6.0.2").cross(CrossVersion.for3Use2_13),
       /* Using Scala 2.13 version of identity-auth-play until a Scala 3 version has been released:
        * https://trello.com/c/5kOc41kD/4669-release-scala-3-version-of-identity-libraries */
-      ("com.gu.identity" %% "identity-auth-core" % "4.37.0")
+      ("com.gu.identity" %% "identity-auth-core" % "7.0.0")
         .cross(CrossVersion.for3Use2_13)
         exclude ("org.scala-lang.modules", "scala-xml_2.13")
         exclude ("org.scala-lang.modules", "scala-parser-combinators_2.13")
         exclude ("com.fasterxml.jackson.module", "jackson-module-scala_2.13")
         exclude ("com.typesafe", "ssl-config-core_2.13"),
       // just to override the older version brought in by simple-configuration
-      "io.netty" % "netty-codec-http2" % "4.1.124.Final",
+      "io.netty" % "netty-codec-http2" % "4.1.132.Final",
       "org.postgresql" % "postgresql" % "42.7.3",
       "com.okta.sdk" % "okta-sdk-api" % "15.0.0",
       "com.okta.sdk" % "okta-sdk-impl" % "15.0.0" % Runtime,
@@ -43,7 +43,7 @@ lazy val root = (project in file("."))
       "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test,
     ),
     dependencyOverrides ++= {
-      val jacksonVersion = "2.18.6"
+      val jacksonVersion = "2.20.1"
       Seq(
         // To keep all Jackson dependencies on the same version
         "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor" % jacksonVersion % Runtime,
