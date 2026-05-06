@@ -1,7 +1,6 @@
 import { GuAlarm } from '@guardian/cdk/lib/constructs/cloudwatch';
 import type { GuStackProps } from '@guardian/cdk/lib/constructs/core';
 import { GuStack, GuStringParameter } from '@guardian/cdk/lib/constructs/core';
-import { GuCname } from '@guardian/cdk/lib/constructs/dns';
 import { GuVpc, SubnetType } from '@guardian/cdk/lib/constructs/ec2';
 import { GuRole } from '@guardian/cdk/lib/constructs/iam';
 import type { App } from 'aws-cdk-lib';
@@ -67,16 +66,6 @@ export class Gatehouse extends GuStack {
 				description: 'ID of database security group.',
 			},
 		);
-
-		// This repository previously contained a Scala Play App which was intended to be a replacement for
-		// Identity API. The app was never completed and the repository is now used for the Gatehouse database.
-		// We may revive this app at some point in the future, so hold on to the CNAME record in case we need it.
-		new GuCname(this, 'EC2AppDNS', {
-			app: ec2App,
-			ttl: Duration.hours(1),
-			domainName: props.domainName,
-			resourceRecord: '255.255.255.255',
-		});
 
 		const vpc = GuVpc.fromIdParameter(this, 'IdentityVPC');
 		const rdsSecurityGroupRules = new SecurityGroup(
