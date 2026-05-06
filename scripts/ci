@@ -15,9 +15,3 @@ set -e
 
 # Verify database migrations are correct
 ./db/test.sh
-
-# Build a Debian package of app
-sbt clean scalafmtCheckAll scalafmtSbtCheck compile Test/compile test Debian/packageBin
-
-# Rename Debian package to something more meaningful
-mv target/gatehouse_0.1.0-SNAPSHOT_all.deb target/gatehouse.deb

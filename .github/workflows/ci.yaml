@@ -28,9 +28,6 @@ jobs:
           cache: yarn
           cache-dependency-path: cdk/yarn.lock
 
-      # SBT is needed for the Scala Play app
-      - uses: guardian/setup-scala@v1
-
       # Build CDK and Play (in sequence)
       - run: scripts/ci
 
@@ -44,5 +41,3 @@ jobs:
           contentDirectories: |
             cdk.out:
               - cdk/cdk.out
-            gatehouse:
-              - target/gatehouse.deb
