@@ -186,11 +186,43 @@ export class Gatehouse extends GuStack {
 		// https://github.com/guardian/aws-account-setup/blob/42885f5d22dbee137950d4e7500bbb1d7cc1bf77/packages/cdk/lib/aws-backup.ts#L72-L76
 		Tags.of(cluster).add('devx-backup-enabled', 'true');
 
+		const exportLocation = StringParameter.valueForStringParameter(
+			this,
+			`/${this.stage}/identity/gatehouse/db-export-location`,
+		);
+
+		const exportRole = new GuRole(this, 'AuroraS3ExportRole', {
+			assumedBy: new ServicePrincipal('rds.amazonaws.com', {
+				conditions: {
+					StringEquals: {
+						'aws:SourceAccount': this.account,
+					},
+				},
+			}),
+			inlinePolicies: {
+				writeToExportBucket: new PolicyDocument({
+					statements: [
+						new PolicyStatement({
+							effect: Effect.ALLOW,
+							actions: ['s3:PutObject', 's3:AbortMultipartUpload'],
+							resources: [`arn:aws:s3:::${exportLocation}/*`],
+						}),
+					],
+				}),
+			},
+		});
+
 		// CDK currently does not support ManagerMasterUserPassword
 		// See https://github.com/aws/aws-cdk/issues/29239
 		const defaultChild = cluster.node.defaultChild as CfnDBCluster;
 		defaultChild.addOverride('Properties.ManageMasterUserPassword', true);
 		defaultChild.addOverride('Properties.MasterUserPassword', undefined);
+		defaultChild.associatedRoles = [
+			{
+				roleArn: exportRole.roleArn,
+				featureName: 's3Export',
+			},
+		];
 
 		// Output RDS Client security group as SSM parameter to be used in other stacks.
 		new StringParameter(this, 'ClientSecurityGroupOutputParameter', {
