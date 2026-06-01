@@ -25,6 +25,10 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
       "Default": "/TEST/identity/gatehouse/db-export-location",
       "Type": "AWS::SSM::Parameter::Value<String>",
     },
+    "SsmParameterValueTESTidentitygatehouses3prefixlistidC96584B6F00A464EAD1953AFF4B05118Parameter": {
+      "Default": "/TEST/identity/gatehouse/s3-prefix-list-id",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
     "VpcId": {
       "Default": "/account/vpc/primary/id",
       "Description": "Virtual Private Cloud to run EC2 instances within. Should NOT be the account default VPC.",
@@ -1064,15 +1068,6 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
     "RDSSecurityGroupRules40FD365B": {
       "Properties": {
         "GroupDescription": "gatehouse-TEST/RDSSecurityGroupRules",
-        "SecurityGroupEgress": [
-          {
-            "CidrIp": "255.255.255.255/32",
-            "Description": "Disallow all traffic",
-            "FromPort": 252,
-            "IpProtocol": "icmp",
-            "ToPort": 86,
-          },
-        ],
         "Tags": [
           {
             "Key": "gu:cdk:version",
@@ -1117,6 +1112,24 @@ exports[`The Gatehouse stack matches the snapshot 1`] = `
         "ToPort": 5432,
       },
       "Type": "AWS::EC2::SecurityGroupIngress",
+    },
+    "RDSSecurityGroupRulestoIndirectPeer4432519F700": {
+      "Properties": {
+        "Description": "Allow database extension to outbound stream export data to S3",
+        "DestinationPrefixListId": {
+          "Ref": "SsmParameterValueTESTidentitygatehouses3prefixlistidC96584B6F00A464EAD1953AFF4B05118Parameter",
+        },
+        "FromPort": 443,
+        "GroupId": {
+          "Fn::GetAtt": [
+            "RDSSecurityGroupRules40FD365B",
+            "GroupId",
+          ],
+        },
+        "IpProtocol": "tcp",
+        "ToPort": 443,
+      },
+      "Type": "AWS::EC2::SecurityGroupEgress",
     },
   },
 }

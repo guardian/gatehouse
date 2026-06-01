@@ -11,7 +11,7 @@ import {
 	CfnReplicationConfig,
 	CfnReplicationSubnetGroup,
 } from 'aws-cdk-lib/aws-dms';
-import { Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
+import { Peer, Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import {
 	CompositePrincipal,
 	Effect,
@@ -75,6 +75,19 @@ export class Gatehouse extends GuStack {
 				vpc: vpc,
 				allowAllOutbound: false,
 			},
+		);
+
+		//the get prefixList id for our current region ( TODO maybe there's another place to get this from as this should be fixed for each region)
+		const s3PrefixListId = StringParameter.valueForStringParameter(
+			this,
+			`/${this.stage}/identity/gatehouse/s3-prefix-list-id`,
+		);
+
+		// add egress rule to allow the db to export to s3 directly
+		rdsSecurityGroupRules.addEgressRule(
+			Peer.prefixList(s3PrefixListId),
+			Port.tcp(443),
+			'Allow database extension to outbound stream export data to S3',
 		);
 
 		const rdsSecurityGroupClients = new SecurityGroup(
